@@ -1,0 +1,29 @@
+id: "6bf6b2af-7ae7-43b6-9132-68d4e7cdbeaf"
+name: "Active Directory - Multiple Windows Logon Failures"
+level: 12
+size: ">0"
+active: true
+author: 
+    - Vinicius Morais <me@souzo.me>
+tags: 
+    - active_directory
+    - authentication_failed
+    - domain_controller
+rule: |-
+      SELECT 
+          alert.data.win.eventdata.ipAddress::String AS ipAddress,
+          count(*) AS event_count,
+          any(alert) AS sample_alert,
+          any(rule_description) AS alert_rule_description,
+          any(rule_id) AS alert_rule_id,
+          any(rule_groups) AS alert_rule_groups,
+          min(timestamp) AS first_seen,
+          max(timestamp) AS last_seen
+      FROM wazuh_alerts
+      WHERE 
+          timestamp >= now() - INTERVAL 5 MINUTE
+          AND has(rule_groups, 'authentication_failed')
+          AND rule_id = 60131
+      GROUP BY ipAddress
+      HAVING event_count > 5
+      ORDER BY event_count DESC

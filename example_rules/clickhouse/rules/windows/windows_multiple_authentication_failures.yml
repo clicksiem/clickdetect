@@ -1,0 +1,34 @@
+id: "14cf312c-d018-49cf-9b39-db2d812c13a7"
+name: "Windows - Multiple Authentication Failures"
+level: 12
+size: ">0"
+active: true
+overwrite: true
+author: 
+    - Vinicius Morais <me@souzo.me>
+group: windows
+tags: 
+    - windows
+    - authentication_failure
+rule: |-
+      SELECT 
+          alert.data.win.eventdata.targetUserName::String AS targetUserName,
+          alert.data.win.eventdata.workstationName::String AS workstationName,
+          count(*) AS event_count,
+          groupArray(id) AS alert_ids,
+          any(rule_description) AS alert_rule_description,
+          any(rule_id::String) AS alert_rule_id,
+          any(rule_groups) AS alert_rule_groups,
+          any(alert) as alert_json,
+          min(timestamp) AS first_seen,
+          max(timestamp) AS last_seen
+      FROM wazuh_alerts_dist
+      WHERE 
+          timestamp >= now() - INTERVAL 5 MINUTE
+          AND has(rule_groups, 'authentication_failed')
+          AND alert.data.win.system.eventID::String = '4625'
+      GROUP BY 
+          targetUserName,
+          workstationName
+      HAVING event_count > 15
+      ORDER BY event_count DESC

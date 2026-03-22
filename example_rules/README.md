@@ -1,0 +1,3 @@
+# Rules
+
+Example rules directory

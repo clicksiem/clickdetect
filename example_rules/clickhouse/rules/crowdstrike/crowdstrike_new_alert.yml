@@ -1,0 +1,19 @@
+id: "d3d39f37-edb3-4d8a-a93b-ed69bb9f7679"
+name: "Crowdstrike - New Alert"
+level: 12
+size: ">0"
+active: true
+author: 
+    - Vinicius Morais <me@souzo.me>
+group: crowdstrike
+tags: 
+    - crowdstrike
+    - antivirus
+rule: |-
+      select id::String as uid, rule_id, rule_groups, tenant, rule_groups, alert.data.metadata.eventType::String as eventType, alert
+        from wazuh_alerts_dist
+      WHERE 
+        (timestamp >= now() - INTERVAL 5 MINUTE)
+        AND has(rule_groups, 'crowdstrike')
+        AND eventType = 'EppDetectionSummaryEvent'
+      order by timestamp ASC

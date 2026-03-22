@@ -1,0 +1,21 @@
+id: "5e861646-0924-48c1-a31b-d1292d53c3a5"
+name: "Fortigate - Virus Detected"
+level: 12
+size: ">0"
+active: true
+author: 
+    - Vinicius Morais <me@souzo.me>
+group: fortigate
+tags: 
+    - fortigate
+    - malware
+data:
+    max_failure: 15
+rule: |-
+      SELECT id::String as uid, rule_id, rule_groups, tenant, alert as sample_alert, alert.data.subtype::String AS eventType
+        from wazuh_alerts_dist
+      WHERE 
+        (timestamp >= now() - INTERVAL 5 MINUTE)
+        AND has(rule_groups, 'fortigate')
+        AND eventType = 'virus'
+      ORDER BY timestamp ASC

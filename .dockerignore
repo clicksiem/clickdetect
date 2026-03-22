@@ -1,0 +1,13 @@
+.git/
+.venv/
+__pycache__/
+*.pyc
+*.log
+.cache/
+dist/
+rules/
+test/
+docs/
+matrix/
+runner.yml
+!README.md

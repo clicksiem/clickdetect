@@ -1,0 +1,67 @@
+name: Build and publish docker image
+on:
+  workflow_call:
+    inputs:
+      version:
+        type: string
+        description: 'Release version (x, y, z)'
+        required: true
+        default: latest
+
+      registry:
+        type: string
+        description: 'Registry'
+        required: false
+        default: ghcr.io
+
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Release version (x, y, z)'
+        required: true
+        default: latest
+
+      registry:
+        description: 'Registry'
+        required: false
+        default: ghcr.io
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  container-github:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - id: Set-container-org
+        run: echo "CONTAINER_ORG=$(echo ${GITHUB_REPOSITORY%%/*} | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
+
+      - name: Install podman
+        uses: redhat-actions/podman-install@main
+
+      - name: Login to registry
+        uses: redhat-actions/podman-login@v1
+        with:
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+          registry: ${{ inputs.registry }}
+
+      - name: Build version and latest
+        run: |
+          podman build -t ${{ env.CONTAINER_ORG }}/clickdetect:${{ inputs.version }} .
+          podman build -t ${{ env.CONTAINER_ORG }}/clickdetect:latest .
+
+      - name: Podman push tags
+        uses: redhat-actions/push-to-registry@v2
+        with:
+          registry: ${{ inputs.registry }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+          tags: ${{ inputs.version }} latest
+          image: ${{ env.CONTAINER_ORG }}/clickdetect

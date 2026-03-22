@@ -1,0 +1,21 @@
+id: "00000000-0000-0000-0000-000000000000"
+name: "Base rule for help"
+level: 1
+size: ">0"
+active: false
+author: 
+    - Vinicius Morais <me@souzo.me>
+group: group-x
+tags: 
+    - active_directory
+    - authentication_failed
+data:
+    max_match_time: 5
+    random_value: "test"
+    test_template: ['x', 'y', 'z']
+rule: |-
+      max match: {{ data.max_match_time }}
+      tags: {{ rule.tags }}
+      tag 1: {{ rule.tags[0] }}
+      tag list: {{ rule.tags[0] | to_list }}
+      group: {{ rule.group }}

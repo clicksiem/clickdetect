@@ -1,0 +1,23 @@
+id: "b522fe2d-54b5-48dc-a770-7d6b8dc7d0ca"
+name: "Windows - Multiple Windows Logon Failures"
+level: 12
+size: ">0"
+active: true
+author: 
+    - Vinicius Morais <me@souzo.me>
+tags: 
+    - windows
+    - authentication_failed
+    - account_locked
+rule: |-
+      SELECT
+        id::String as uid,
+        rule_id,
+        rule_description,
+        rule_groups,
+        alert
+      FROM wazuh_alerts
+      WHERE 
+          timestamp >= now() - INTERVAL 5 MINUTE
+          AND has(rule_groups, 'authentication_failures')
+          AND rule_id = 60204

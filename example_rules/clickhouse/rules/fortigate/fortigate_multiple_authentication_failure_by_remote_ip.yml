@@ -1,0 +1,34 @@
+id: "21e523ea-502b-418e-a38b-2571a3e05e96"
+name: "Fortigate - Multiple Autentication Failures by Remote IP"
+level: 12
+size: ">0"
+active: true
+author: 
+    - Vinicius Morais <me@souzo.me>
+group: fortigate
+tags: 
+    - fortigate
+    - authentication_failed
+rule: |-
+      SELECT 
+          alert.data.remip::String AS remip,
+          alert.data.subtype::String AS subtype,
+          alert.data.dstuser::String AS dstuser,
+          count(*) AS event_count,
+          any(alert) AS sample_alert,
+          any(rule_description) AS alert_rule_description,
+          any(rule_id) AS alert_rule_id,
+          any(rule_groups) AS alert_rule_groups,
+          min(timestamp) AS first_seen,
+          max(timestamp) AS last_seen
+      FROM wazuh_alerts
+      WHERE 
+          timestamp >= now() - INTERVAL 5 MINUTE
+          AND has(rule_groups, 'fortigate')
+          AND has(rule_groups, 'authentication_failed')
+      GROUP BY 
+          remip,
+          subtype,
+          dstuser
+      HAVING event_count > 3
+      ORDER BY event_count DESC

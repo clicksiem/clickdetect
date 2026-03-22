@@ -1,0 +1,74 @@
+[project]
+name = "clickdetect"
+version = "0.0.0"
+description = "Generic SIEM engine detector"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "aiohttp[speedups]>=3.13.2",
+    "apscheduler>=3.11.1",
+    "asyncpg>=0.31.0",
+    "clickhouse-connect>=0.10.0",
+    "colorlog>=6.10.1",
+    "fastapi[standard]>=0.127.1",
+    "jinja2>=3.1.6",
+    "pyyaml>=6.0.3",
+]
+authors = [
+    { name = "Vinicius Morais", email = "me@souzo.me" }
+]
+
+[dependency-groups]
+dev = [
+    "git-cliff>=2.12.0",
+    "mkdocs-material>=9.7.5",
+    "mkdocs-minify-plugin>=0.8.0",
+    "mkdocs-redirects>=1.2.2",
+    "mkdocs-rss-plugin>=1.17.9",
+]
+
+[build-system]
+requires = ["uv_build>=0.10.9,<0.11.0"]
+build-backend = "uv_build"
+
+[tool.uv.build-backend]
+module-root = ""
+
+[project.scripts]
+clickdetect = "clickdetect:run"
+
+[tool.uv]
+package = true
+
+[tool.git-cliff.changelog]
+header = "# Changelog\n\n"
+footer = "#### by souzo"
+trim = true
+body = """
+## [{{ version | default(value="unreleased") | trim_start_matches(pat="v") }}]{% if timestamp %} - {{ timestamp | date(format="%Y-%m-%d") }}{% endif %}
+{% for group, commits in commits | group_by(attribute="group") %}
+    ### {{ group | striptags | trim | upper_first }}
+    {% for commit in commits | unique(attribute="message") %}
+        - {{ commit.message | split(pat="\n") | first | upper_first | trim }}
+    {% endfor %}
+{% endfor %}
+"""
+
+[tool.git-cliff.git]
+conventional_commits = true
+require_conventional = false
+commit_parsers = [
+    { message = "^chore\\(release\\)", skip = true },
+    { message = "^chore\\(deps\\)", skip = true },
+    { message = "^ci", skip = true },
+    { message = "^style", skip = true },
+    { message = ".*\\(webhook\\)", group = "<!-- 2 --> 🪝 Webhook Changes"},
+    { message = ".*\\(datasource\\)", group = "<!-- 3 --> 🗃️ Datasource Changes"},
+    { message = ".*\\(api\\)", group = "<!-- 4 --> 🔌 API"},
+    { message = "^feat", group = "<!-- 0 --> 🚀 Features"},
+    { message = "^fix", group = "<!-- 1 --> 🐛 Bug Fixes"},
+    { message = "^doc", group = "<!-- 6 --> 📝 Documentation"},
+    { message = "^perf", group = "<!-- 5 --> ⚡ Performance"},
+    { message = "^refactor", group = "<!-- 7 --> ♻️ Refactor"},
+    { message = '.*', group="<!-- 8 -->🔧 Other changes", default_scope = "other"}
+]

@@ -1,0 +1,19 @@
+id: "92beeeaf-8539-4ecb-a458-bd443f21ea2a"
+name: "Active Directory - Admin Group Changed"
+level: 12
+size: ">0"
+active: true
+author: 
+    - Vinicius Morais <me@souzo.me>
+group: active_directory
+tags: 
+    - active_directory
+    - windows_group_changed
+rule: |-
+      SELECT id::String as uid, rule_id, rule_groups, tenant, alert
+        from wazuh_alerts_dist
+      WHERE 
+        (timestamp >= now() - INTERVAL 5 MINUTE)
+        AND has(rule_groups, 'win_group_changed')
+        AND rule_id IN (60154,60156,60159,60166,60167,60187,60188)
+      ORDER BY timestamp ASC

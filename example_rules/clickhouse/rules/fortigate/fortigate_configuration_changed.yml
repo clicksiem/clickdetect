@@ -1,0 +1,21 @@
+id: "ca274210-f207-42b5-a575-328f2b3e24e7"
+name: "Fortigate - Configuration Changed"
+level: 12
+size: ">0"
+active: true
+author: 
+    - Vinicius Morais <me@souzo.me>
+group: fortigate
+tags: 
+    - fortigate
+    - config_changed
+data:
+    max_failure: 15
+rule: |-
+      select id::String as uid, rule_id, rule_groups, tenant, rule_groups, alert.data.logdesc::String as logDesc, alert
+        from wazuh_alerts_dist
+      WHERE 
+        (timestamp >= now() - INTERVAL 5 MINUTE)
+        AND has(rule_groups, 'fortigate')
+        AND logDesc = 'Configuration changed'
+      order by timestamp ASC

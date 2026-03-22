@@ -1,0 +1,114 @@
+name: Release
+
+on:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - '.github/**'
+
+permissions:
+  contents: write
+  pull-requests: read
+  packages: write
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.check.outputs.version }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+
+      - name: Install dev dependencies (includes git-cliff)
+        run: uv sync --only-dev
+
+      - name: Check if release is needed
+        id: check
+        run: |
+          NEXT_VERSION=$(uv run git-cliff --bumped-version 2>/dev/null || true)
+          if [ -z "$NEXT_VERSION" ] || git tag -l | grep -qx "$NEXT_VERSION"; then
+            echo "version=" >> $GITHUB_OUTPUT
+          else
+            echo "version=$NEXT_VERSION" >> $GITHUB_OUTPUT
+          fi
+
+  release:
+    needs: check
+    if: needs.check.outputs.version != ''
+    runs-on: ubuntu-latest
+    concurrency:
+      group: ${{ github.workflow }}-release
+      cancel-in-progress: false
+
+    outputs:
+      version: ${{ needs.check.outputs.version }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+
+      - name: Install dev dependencies (includes git-cliff)
+        run: uv sync --only-dev
+
+      - name: Configure git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Run release script
+        run: bash scripts/release.sh
+
+      - name: Push commit and tag
+        run: |
+          git push origin
+          git push origin --tags
+
+      - name: Generate checksums
+        run: |
+          sha256sum dist/*.whl > dist/whl.sha256
+          sha256sum dist/*.tar.gz > dist/tar-gz.sha256
+
+      - name: Upload dist artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist/
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ needs.check.outputs.version }}
+          name: ${{ needs.check.outputs.version }}
+          body_path: NEXT_RELEASE.md
+          files: |
+           dist/*.whl
+           dist/*.tar.gz
+           dist/*.sha256
+
+  container:
+    needs: release
+    uses: ./.github/workflows/container.yml
+    with:
+      version: ${{ needs.release.outputs.version }}
+    secrets: inherit
+
+  pypi:
+    needs: release
+    uses: ./.github/workflows/pypi.yml
+    with:
+      version: ${{ needs.release.outputs.version }}
+    secrets: inherit

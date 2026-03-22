@@ -1,0 +1,19 @@
+id: "64f01417-5a3b-47ea-9a60-463ee86c9856"
+name: "Behavior - Attack Detected"
+level: 12
+size: ">0"
+active: true
+author: 
+    - Vinicius Morais <me@souzo.me>
+group: behavior
+tags: 
+    - behavior
+    - attack
+rule: |-
+      SELECT id::String as uid, rule_id, rule_groups, tenant, rule_groups, alert.decoder.name::String as decoder_name, alert
+        from wazuh_alerts_dist
+      WHERE 
+        (timestamp >= now() - INTERVAL 5 MINUTE)
+        AND has(rule_groups, 'attack')
+        AND decoder_name != 'web-accesslog'
+      order by timestamp ASC

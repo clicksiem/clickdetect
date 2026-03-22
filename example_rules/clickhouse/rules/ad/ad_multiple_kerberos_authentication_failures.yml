@@ -1,0 +1,57 @@
+id: "11f975e4-aae8-448d-a77f-a7e7d5cd3295"
+name: "Active Directory - Multiple Kerberos Authentication Failures"
+level: 12
+size: ">0"
+active: true
+author: 
+    - Vinicius Morais <me@souzo.me>
+group: active_directory
+tags: 
+    - active_directory
+    - kerberos
+    - authentication_failed
+rule: |-
+      SELECT 
+          alert.data.win.system.eventID::String AS eventID,
+          alert.data.win.eventdata.targetUserName::String AS targetUserName,
+          alert.data.win.eventdata.ipAddress::String AS ipAddress,
+          alert.data.win.eventdata.status::String AS status,
+          alert.data.win.eventdata.ticketEncryptionType::String AS ticketEncryptionType,
+          alert.data.win.eventdata.workstation::String AS workstation,
+          count(*) AS event_count,
+          any(alert) AS sample_alert,
+          any(rule_description) AS alert_rule_description,
+          any(rule_groups) AS alert_rule_groups,
+          min(timestamp) AS first_seen,
+          max(timestamp) AS last_seen
+      FROM wazuh_alerts
+      WHERE 
+          timestamp >= now() - INTERVAL 5 MINUTE
+          AND has(rule_groups, 'windows')
+          AND rule_id = 60104
+          AND (
+              (
+                  alert.data.win.system.eventID::String = '4771' 
+                  AND match(alert.data.win.eventdata.status::String, '0x(6|12|18|1F)')
+              )
+              OR 
+              (
+                  alert.data.win.system.eventID::String = '4776' 
+                  AND alert.data.win.system.severityValue::String = 'AUDIT_FAILURE'
+              )
+              OR 
+              (
+                  alert.data.win.system.eventID::String = '4768' 
+                  AND match(alert.data.win.eventdata.status::String, '0x(6|12|18|1F)')
+                  AND alert.data.win.system.severityValue::String = 'AUDIT_FAILURE'
+              )
+          )
+      GROUP BY 
+          eventID,
+          targetUserName,
+          ipAddress,
+          status,
+          ticketEncryptionType,
+          workstation
+      HAVING event_count > 15
+      ORDER BY event_count DESC

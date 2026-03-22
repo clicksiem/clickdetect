@@ -1,0 +1,31 @@
+id: "71f5b2f9-8345-4453-8282-2c1cff3b7db0"
+name: "Fortigate - Configuration Changed via External IP"
+level: 12
+size: ">0"
+active: true
+author: 
+    - Vinicius Morais <me@souzo.me>
+group: fortigate
+tags: 
+    - fortigate
+    - config_changed
+rule: |-
+      SELECT 
+          alert.data.srcip::String AS srcip,
+          count(*) AS event_count,
+          any(alert) AS sample_alert,
+          any(rule_description) AS alert_rule_description,
+          any(rule_id) AS alert_rule_id,
+          any(rule_groups) AS alert_rule_groups,
+          min(timestamp) AS first_seen,
+          max(timestamp) AS last_seen
+      FROM wazuh_alerts
+      WHERE 
+          timestamp >= now() - INTERVAL 5 MINUTE
+          AND has(rule_groups, 'fortigate')
+          AND alert.data.logdesc::String = 'Admin login successful'
+          AND NOT isIPAddressInRange(alert.data.srcip::String, '192.168.0.0/16')
+          AND NOT isIPAddressInRange(alert.data.srcip::String, '172.16.0.0/12')
+          AND NOT isIPAddressInRange(alert.data.srcip::String, '10.0.0.0/8')
+      GROUP BY srcip
+      ORDER BY event_count DESC
