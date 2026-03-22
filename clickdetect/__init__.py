@@ -92,7 +92,6 @@ async def main():
         tasks.append(load_api(args))
     await asyncio.gather(*tasks)
 
-
 def run():
     asyncio.run(main())
 
