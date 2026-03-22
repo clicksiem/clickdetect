@@ -53,6 +53,7 @@ nav:
       - Generic: webhooks/generic.md
       - Teams: webhooks/teams.md
       - Email: webhooks/email.md
+      - Forgejo: webhooks/forgejo.md
       - Matrix: webhooks/matrix.md
     - API: api.md
   - Blog:
