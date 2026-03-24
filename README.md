@@ -34,19 +34,39 @@ podman run -v ./runner.yml:/app/runner.yml -p 8080 clickdetect --api -p 8080
 podman run -v ./runner.yml:/app/runner.yml -p 8080 ghcr.io/clicksiem/clickdetect:latest --api -p 8080
 ```
 
-## Next steps
+## Roadmap
 
-* Add minimal 10 webhooks []
-* Implement timeframe []
-    - Group Alerts
-    - Silence alerts 
-* Add silence alerts endpoint for api []
-* Add sigma convertion in rules []
-    - like: sigma: true
-* Hot reload for rules []
-    - add option like --reload
-* Add api endpoint to add/remove/update new rules []
-    - file hot reload will make this possible
+### Webhooks
+
+- [ ] Complete DFIR-IRIS webhook integration
+- [ ] Add Slack webhook
+- [ ] Add Discord webhook
+- [ ] Add PagerDuty webhook
+- [ ] Add Telegram webhook
+- [ ] Add Opsgenie webhook
+
+### Alert Management
+
+- [ ] Implement timeframe-based alert grouping (avoid duplicate alerts within a window)
+- [ ] Implement alert silencing (suppress alerts by rule/group/tenant for a duration)
+- [ ] Add API endpoints to manage silences (`POST /silence`, `DELETE /silence/{id}`)
+
+### Rule Management
+
+- [ ] Hot reload rules without restarting (`--reload` flag or file watcher)
+- [ ] API endpoints to add/update/remove rules dynamically (depends on hot reload)
+- [ ] Sigma rule conversion support (`sigma: true` in rule definition)
+
+### Datasources
+
+- [ ] Add support for Splunk
+- [ ] Add support for OpenSearch
+- [ ] Add support for Prometheus/VictoriaMetrics (metrics-based detection)
+
+### API & Observability
+
+- [ ] Implement an endpoint to create, edit and delete rules
+- [ ] Alert history endpoint to query past triggered rules
 
 ## Contact-me
 

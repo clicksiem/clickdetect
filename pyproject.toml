@@ -60,6 +60,7 @@ require_conventional = false
 commit_parsers = [
     { message = "^chore\\(release\\)", skip = true },
     { message = "^chore\\(deps\\)", skip = true },
+    { message = "^chore\\(docs\\)", skip = true },
     { message = "^ci", skip = true },
     { message = "^style", skip = true },
     { message = ".*\\(webhook\\)", group = "<!-- 2 --> 🪝 Webhook Changes"},

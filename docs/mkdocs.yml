@@ -59,7 +59,10 @@ nav:
   - Blog:
     - blog/index.md
 plugins:
-  - minify
+  - minify:
+      minify_html: true
+      minify_js: true
+      minify_css: true
   - blog:
       authors: true
       authors_file: .authors.yml
