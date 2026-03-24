@@ -21,7 +21,8 @@ async def load_api(args: Any):
     app.include_router(detector_router)
     app.include_router(rules_router)
 
-    server_config = uvicorn.Config(app, host='0.0.0.0', port=args.port, log_level='info')
+    log_level = 'info' if not args.verbose else 'debug'
+    server_config = uvicorn.Config(app, host='0.0.0.0', port=args.port, log_level=log_level)
     server = uvicorn.Server(server_config)
     await server.serve()
 
@@ -67,7 +68,7 @@ async def loop_run(runner: Runner | None = None):
 def read_stdin() -> str:
     from sys import stdin
     user_input = stdin.read()
-    print(user_input)
+    logger.debug(user_input)
     return user_input
 
 async def main():
@@ -77,7 +78,9 @@ async def main():
     parser.add_argument('-r', '--runner', default=config.default_runner, type=str, help=f'Runner file containing webhook, datasources, detectors and rules. Default: {config.default_runner}')
     parser.add_argument('--stdin', default=False, action='store_true', help='Read file from stdin')
     parser.add_argument('--version', default=False, action='store_true', help='Project version')
+    parser.add_argument('-v', '--verbose', default=False, action='store_true', help='Add verbosity')
     args = parser.parse_args()
+    config.logConfig(verbose=args.verbose)
 
     if args.version:
         print(version)

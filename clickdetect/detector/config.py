@@ -7,10 +7,10 @@ running = True
 rule_eval_semaphore = 7
 webhook_send_semaphore = 7
 
-
-def logConfig():
+def logConfig(verbose: bool = False):
+    level = colorlog.DEBUG if verbose else colorlog.INFO
     colorlog.basicConfig(
-        level=colorlog.DEBUG,
+        level=level,
         format="%(asctime)s | %(log_color)s%(levelname)-8s%(reset)s | %(name)s | %(message)s",
         log_colors={
             "DEBUG": "cyan",
@@ -19,6 +19,7 @@ def logConfig():
             "ERROR": "red",
             "CRITICAL": "red,bg_white",
         },
+        force=True,
     )
 
 
