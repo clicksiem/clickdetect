@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.1.0] - 2026-03-25
+
+### 🚀 Features
+
+- Add verbose option
+
+- Add rule watcher for hot reload
+
+
+### 🐛 Bug Fixes
+
+- Name is not on result
+
 ## [1.0.1] - 2026-03-24
 
 ### 🔧 Other changes
