@@ -39,6 +39,8 @@ uv run clickdetect [OPTIONS]
 | `-p`, `--port` | `8080` | Port for the API server |
 | `-r`, `--runner` | `runner.yml` | Path to the runner configuration file |
 | `--stdin` | off | Read the runner configuration from stdin |
+| `--verbose` | off | Verbose mode |
+| `--reload` | off | Hot reload rules |
 
 
 # Docker / Podman

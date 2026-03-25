@@ -53,7 +53,7 @@ podman run -v ./runner.yml:/app/runner.yml -p 8080 ghcr.io/clicksiem/clickdetect
 
 ### Rule Management
 
-- [ ] Hot reload rules without restarting (`--reload` flag or file watcher)
+- [ x ] Hot reload rules without restarting (`--reload` flag or file watcher) ✅
 - [ ] API endpoints to add/update/remove rules dynamically (depends on hot reload)
 - [ ] Sigma rule conversion support (`sigma: true` in rule definition)
 

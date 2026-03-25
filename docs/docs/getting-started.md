@@ -1,12 +1,26 @@
 # Getting Started
 
-## 1. Pull image
+## Using uv
+
+Follow uv installation [https://docs.astral.sh/uv/](https://docs.astral.sh/uv/)
+
+Clone, sync and run!
+
+```sh
+git clone https://github.com/clicksiem/clickdetect
+uv sync 
+uv run clickdetect --api --reload
+```
+
+## Using Docker/Podman
+
+### 1. Pull image
 
 ```sh
 podman pull ghcr.io:clicksiem/clickdetect:latest
 ```
 
-## 2. Create compose.yml
+### 2. Create compose.yml
 
 ```yaml
 services:
@@ -19,7 +33,7 @@ services:
             - ./runner.yml:/app/runner.yml
 ```
 
-## 3. Configure runner
+### 3. Configure runner
 
 Create a `runner.yml` file at the project root:
 
@@ -62,7 +76,7 @@ detectors:
 
 See the [Runner](runner.md) page for the full configuration reference.
 
-## 4. Write a rule
+### 4. Write a rule
 
 Create a rule file (e.g. `rules/brute_force.yml`):
 
@@ -90,7 +104,7 @@ rule: |-
 
 See the [Rules](rules.md) page for all rule fields and the available Jinja2 template variables.
 
-## 5. Run and have fun
+### 5. Run and have fun
 
 ```sh
 podman compose up -d
