@@ -75,7 +75,7 @@ class ElasticsearchDataSource(BaseDataSource):
     def _parse_result(self, payload: Any) -> DataSourceQueryResult:
         hits = payload.get("hits", {}).get("hits", [])
         rows = [{"_id": h["_id"], "_index": h["_index"], **h["_source"]} for h in hits]
-        return DataSourceQueryResult(len(rows), rows)
+        return DataSourceQueryResult(len(rows), rows, self._name())
 
     @classmethod
     def _name(cls) -> str:

@@ -2,6 +2,7 @@ from typing import Tuple
 from dataclasses import dataclass, field
 from typing import Any, List
 from glob import glob
+from pathlib import Path
 from json import dumps
 from yaml import safe_load
 from logging import getLogger
@@ -227,14 +228,16 @@ class Detector:
             rule = await self.load_rule_path(path)
             if not rule:
                 return
+            abs_path = str(Path(path).resolve())
             async with self._rule_lock:
-                self._rules = [r for r in self._rules if r.path != path]
+                self._rules = [r for r in self._rules if r.path != abs_path]
                 self._rules.append(rule)
 
     async def remove_rule_by_path(self, path: str):
+        abs_path = str(Path(path).resolve())
         async with self._callback_rule_lock:
             async with self._rule_lock:
-                self._rules = [r for r in self._rules if r.path != path]
+                self._rules = [r for r in self._rules if r.path != abs_path]
 
     async def load_rule_path(self, rule_path: str) -> Rule | None:
         logger.info(f"Loading rule: {rule_path}")
@@ -244,7 +247,7 @@ class Detector:
             rule_loaded = await self.load_rule_buffer(data)
             if not rule_loaded:
                 raise Exception("Rule not loaded")
-            rule_loaded.path = rule_path
+            rule_loaded.path = str(Path(rule_path).resolve())
             return rule_loaded
         except (FileNotFoundError, FileExistsError):
             logger.error("Rule file does not exists")

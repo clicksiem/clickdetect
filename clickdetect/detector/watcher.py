@@ -45,7 +45,7 @@ class RuleWatcher:
                     if not detector.active:
                         continue
                     if not any(
-                        Path(path).is_relative_to(self.collect_base_dir(rp))
+                        Path(path).is_relative_to(Path(self.collect_base_dir(rp)).resolve())
                         for rp in detector.rules
                     ):
                         continue
@@ -56,5 +56,9 @@ class RuleWatcher:
                         logger.info(f"Rule modified: {path}")
                         await detector.reload_rule_by_path(path)
                     elif change == Change.deleted:
-                        logger.info(f"Rule deleted: {path}")
-                        await detector.remove_rule_by_path(path)
+                        if Path(path).exists():
+                            logger.info(f"Rule modified (atomic save): {path}")
+                            await detector.reload_rule_by_path(path)
+                        else:
+                            logger.info(f"Rule deleted: {path}")
+                            await detector.remove_rule_by_path(path)

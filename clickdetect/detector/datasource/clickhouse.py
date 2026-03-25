@@ -40,7 +40,7 @@ class ClickhouseDataSource(BaseDataSource):
             return None
         try:
             result = await self.client.query(data)
-            return DataSourceQueryResult(result.row_count, list(result.named_results()))
+            return DataSourceQueryResult(result.row_count, list(result.named_results()), self._name())
         except Exception as ex:
             logger.error(f"Query failed, resetting client | {ex}")
             self.client = None

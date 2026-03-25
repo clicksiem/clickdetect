@@ -81,14 +81,14 @@ class LokiDataSource(BaseDataSource):
                     rows.append({"timestamp": ts, "value": value, **metric})
                 if values:
                     total += float(values[-1][1])
-            return DataSourceQueryResult(int(total), rows)
+            return DataSourceQueryResult(int(total), rows, self._name())
 
         rows = []
         for stream in results:
             labels = stream.get("stream", {})
             for ts, line in stream.get("values", []):
                 rows.append({"timestamp": ts, "line": line, **labels})
-        return DataSourceQueryResult(len(rows), rows)
+        return DataSourceQueryResult(len(rows), rows, self._name())
 
     @classmethod
     def _name(cls) -> str:

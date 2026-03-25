@@ -38,7 +38,7 @@ class PostgreSQLDataSource(BaseDataSource):
             async with self._pool.acquire() as conn:
                 rows = await conn.fetch(data)
                 results = [dict(row) for row in rows]
-                return DataSourceQueryResult(len(results), results)
+                return DataSourceQueryResult(len(results), results, self._name())
         except Exception as ex:
             logger.error(f"Query failed, resetting pool | {ex}")
             if self._pool:
