@@ -54,7 +54,7 @@ async def load_runner(args: Any) -> Runner | None:
         return None
 
     for detector in detectors:
-        await manager.run_detector(detector)
+        await manager.run_detector(detector, not args.no_start)
 
     return runner
 
@@ -113,6 +113,19 @@ async def main():
     parser.add_argument(
         "-v", "--verbose", default=False, action="store_true", help="Add verbosity"
     )
+    parser.add_argument(
+        "--reload",
+        default=False,
+        action="store_true",
+        help="Watch rule files and reload on changes",
+    )
+    parser.add_argument(
+        "--no-start",
+        default=False,
+        action="store_true",
+        help="Do not start detectors on start",
+    )
+
     args = parser.parse_args()
     config.logConfig(verbose=args.verbose)
 
@@ -127,6 +140,8 @@ async def main():
     tasks = [loop_run(runner)]
     if args.api:
         tasks.append(load_api(args))
+    if args.reload and runner:
+        tasks.append(runner.start_watcher())
     await asyncio.gather(*tasks)
 
 

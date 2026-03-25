@@ -5,7 +5,7 @@ from .datasource import datasources
 from .detector import Detector
 from .webhooks.generic import GenericWebhook
 from .webhooks import webhooks as w_webhooks
-
+from .watcher import RuleWatcher
 logger = getLogger(__name__)
 
 
@@ -123,6 +123,10 @@ class Runner:
 
     async def get_datasource(self):
         return self.datasource
+
+    async def start_watcher(self):
+        watcher = RuleWatcher(self.detectors)
+        await watcher.start_watch()
 
     async def close(self):
         logger.info("Cleaning up resources...")
