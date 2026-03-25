@@ -214,6 +214,28 @@ class Detector:
         logger.debug(f"Rule | {rule_data}")
         return rule_data
 
+    async def add_rule_by_path(self, rule_path: str):
+        async with self._callback_rule_lock:
+            rule = await self.load_rule_path(rule_path)
+            if not rule:
+                logger.debug(f"Rule not found: {rule_path}")
+                return
+            await self.add_rule(rule)
+
+    async def reload_rule_by_path(self, path: str):
+        async with self._callback_rule_lock:
+            rule = await self.load_rule_path(path)
+            if not rule:
+                return
+            async with self._rule_lock:
+                self._rules = [r for r in self._rules if r.path != path]
+                self._rules.append(rule)
+
+    async def remove_rule_by_path(self, path: str):
+        async with self._callback_rule_lock:
+            async with self._rule_lock:
+                self._rules = [r for r in self._rules if r.path != path]
+
     async def load_rule_path(self, rule_path: str) -> Rule | None:
         logger.info(f"Loading rule: {rule_path}")
         try:
@@ -232,7 +254,7 @@ class Detector:
             return None
 
     async def load_rules_directory(self) -> List[Rule]:
-        logger.debug("finding rules")
+        logger.debug("Searching for rules")
         for rule in self.rules:
             rules_in_path = glob(rule, recursive=True)
             for rule_path in rules_in_path:

@@ -9,11 +9,8 @@ class DataSourceQueryResult:
     datasource: str
 
     def to_dict(self) -> Dict[str, Any]:
-        return { 
-            'len': self.len,
-            'value': self.value,
-            'datasource': self.datasource
-        }
+        return {"len": self.len, "value": self.value, "datasource": self.datasource}
+
 
 class BaseDataSource:
     async def connect(self):

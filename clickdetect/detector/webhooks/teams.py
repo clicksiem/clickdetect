@@ -56,7 +56,7 @@ class TeamsWebhook(BaseWebhook):
                 else:
                     logger.info(f"Alert sent to Teams: {self.url}")
         except Exception as ex:
-            logger.error(f"Alert not sent to Teams")
+            logger.error("Alert not sent to Teams")
             logger.error(data)
             logger.error(str(ex))
 

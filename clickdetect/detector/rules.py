@@ -5,6 +5,7 @@ import re
 
 logger = getLogger(__name__)
 
+
 @dataclass
 class Rule:
     id: str
@@ -58,4 +59,5 @@ class Rule:
             "data": self.data,
             "description": self.description,
             "detector": self.detector,
+            "path": self.path,
         }

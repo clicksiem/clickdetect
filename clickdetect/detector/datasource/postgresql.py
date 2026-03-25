@@ -5,6 +5,7 @@ from .base import BaseDataSource, DataSourceQueryResult
 
 logger = getLogger(__name__)
 
+
 class PostgreSQLDataSource(BaseDataSource):
     database: str
     host: str
@@ -23,7 +24,9 @@ class PostgreSQLDataSource(BaseDataSource):
                 password=self.password,
             )
         except Exception as ex:
-            logger.error(f'Failed to connect to PostgreSQL at {self.host}:{self.port} | {ex}')
+            logger.error(
+                f"Failed to connect to PostgreSQL at {self.host}:{self.port} | {ex}"
+            )
             self._pool = None
 
     async def query(self, data: str) -> DataSourceQueryResult | None:
@@ -37,7 +40,7 @@ class PostgreSQLDataSource(BaseDataSource):
                 results = [dict(row) for row in rows]
                 return DataSourceQueryResult(len(results), results)
         except Exception as ex:
-            logger.error(f'Query failed, resetting pool | {ex}')
+            logger.error(f"Query failed, resetting pool | {ex}")
             if self._pool:
                 await self._pool.close()
             self._pool = None
@@ -45,27 +48,29 @@ class PostgreSQLDataSource(BaseDataSource):
 
     @classmethod
     def _name(cls) -> str:
-        return 'postgresql'
+        return "postgresql"
 
     def to_dict(self) -> Dict:
         return {
-            'name': self._name(),
-            'database': self.database,
-            'host': self.host,
-            'port': self.port,
-            'username': self.username,
-            'password': self.password,
+            "name": self._name(),
+            "database": self.database,
+            "host": self.host,
+            "port": self.port,
+            "username": self.username,
+            "password": self.password,
         }
 
     async def _parse(self, _obj: Any):
-        database = _obj.get('database')
-        host = _obj.get('host')
-        port = _obj.get('port')
-        username = _obj.get('username')
-        password = _obj.get('password')
+        database = _obj.get("database")
+        host = _obj.get("host")
+        port = _obj.get("port")
+        username = _obj.get("username")
+        password = _obj.get("password")
 
         if not database or not host or not port or not username or not password:
-            raise Exception('Invalid parameters: database, host, port, username and password are required')
+            raise Exception(
+                "Invalid parameters: database, host, port, username and password are required"
+            )
 
         self.database = database
         self.host = host

@@ -7,6 +7,7 @@ from .base import BaseDataSource, DataSourceQueryResult
 
 logger = getLogger(__name__)
 
+
 class ClickhouseDataSource(BaseDataSource):
     database: str
     host: str
@@ -19,15 +20,17 @@ class ClickhouseDataSource(BaseDataSource):
     async def connect(self):
         try:
             self.client = await get_async_client(
-                    database=self.database,
-                    host=self.host,
-                    username=self.username,
-                    password=self.password,
-                    port=self.port,
-                    secure=self.verify
+                database=self.database,
+                host=self.host,
+                username=self.username,
+                password=self.password,
+                port=self.port,
+                secure=self.verify,
             )
         except Exception as ex:
-            logger.error(f'Failed to connect to ClickHouse at {self.host}:{self.port} | {ex}')
+            logger.error(
+                f"Failed to connect to ClickHouse at {self.host}:{self.port} | {ex}"
+            )
             self.client = None
 
     async def query(self, data: str) -> DataSourceQueryResult | None:
@@ -39,35 +42,35 @@ class ClickhouseDataSource(BaseDataSource):
             result = await self.client.query(data)
             return DataSourceQueryResult(result.row_count, list(result.named_results()))
         except Exception as ex:
-            logger.error(f'Query failed, resetting client | {ex}')
+            logger.error(f"Query failed, resetting client | {ex}")
             self.client = None
             return None
 
     @classmethod
     def _name(cls) -> str:
-        return 'clickhouse'
+        return "clickhouse"
 
     def to_dict(self) -> Dict:
         return {
-            'name': self._name(),
-            'database': self.database,
-            'host': self.host,
-            'port': self.port,
-            'username': self.username,
-            'password': self.password,
-            'verify': self.verify
+            "name": self._name(),
+            "database": self.database,
+            "host": self.host,
+            "port": self.port,
+            "username": self.username,
+            "password": self.password,
+            "verify": self.verify,
         }
 
     async def _parse(self, _obj: Any):
-        database = _obj.get('database', 'default')
-        host = _obj.get('host')
-        port = _obj.get('port')
-        username = _obj.get('username')
-        password = _obj.get('password')
-        verify = _obj.get('verify', False)
+        database = _obj.get("database", "default")
+        host = _obj.get("host")
+        port = _obj.get("port")
+        username = _obj.get("username")
+        password = _obj.get("password")
+        verify = _obj.get("verify", False)
 
         if not host or not port or not username or not password:
-            raise Exception(f'Invalid parameters: {self.to_dict().items()}')
+            raise Exception(f"Invalid parameters: {self.to_dict().items()}")
 
         self.database = database
         self.host = host

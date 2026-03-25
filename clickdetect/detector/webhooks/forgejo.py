@@ -20,6 +20,7 @@ Interval : {{ detector.for_time }}
 Matches  : {{ data.len }}
 """
 
+
 class ForgejoWebhook(BaseWebhook):
     name: str
     type: str

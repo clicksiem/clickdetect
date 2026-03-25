@@ -7,6 +7,7 @@ running = True
 rule_eval_semaphore = 7
 webhook_send_semaphore = 7
 
+
 def logConfig(verbose: bool = False):
     level = colorlog.DEBUG if verbose else colorlog.INFO
     colorlog.basicConfig(

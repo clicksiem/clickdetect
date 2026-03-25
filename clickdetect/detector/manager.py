@@ -10,6 +10,7 @@ logger = logging.getLogger(__name__)
 
 manager = None
 
+
 def get_manager_instance():
     global manager
     if not manager:

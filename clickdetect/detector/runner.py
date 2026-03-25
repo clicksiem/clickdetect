@@ -8,6 +8,7 @@ from .webhooks import webhooks as w_webhooks
 
 logger = getLogger(__name__)
 
+
 class Runner:
     def __init__(self, data: Any) -> None:
         self.data = data

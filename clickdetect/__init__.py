@@ -16,37 +16,41 @@ from .detector import config
 config.logConfig()
 logger = getLogger(__name__)
 
+
 async def load_api(args: Any):
     app = FastAPI(title=config.app_name)
     app.include_router(detector_router)
     app.include_router(rules_router)
 
-    log_level = 'info' if not args.verbose else 'debug'
-    server_config = uvicorn.Config(app, host='0.0.0.0', port=args.port, log_level=log_level)
+    log_level = "info" if not args.verbose else "debug"
+    server_config = uvicorn.Config(
+        app, host="0.0.0.0", port=args.port, log_level=log_level
+    )
     server = uvicorn.Server(server_config)
     await server.serve()
+
 
 async def load_runner(args: Any) -> Runner | None:
     if args.stdin:
         data = safe_load(read_stdin())
     else:
-        with open(args.runner, 'r') as f:
+        with open(args.runner, "r") as f:
             data = safe_load(f)
 
     if not data:
-        logger.fatal('Invalid runner. The loaded runner is not a valid yaml')
+        logger.fatal("Invalid runner. The loaded runner is not a valid yaml")
         exit(1)
 
     runner = await Runner(data).init()
     if not runner:
-        logger.debug('Runner not loaded')
+        logger.warning("Runner not loaded")
         return None
 
     detectors = await runner.get_detectors()
     manager = Manager()
 
     if not detectors:
-        logger.error('No detector found')
+        logger.error("No detector found")
         return None
 
     for detector in detectors:
@@ -54,40 +58,70 @@ async def load_runner(args: Any) -> Runner | None:
 
     return runner
 
+
 async def loop_run(runner: Runner | None = None):
     try:
         while await config.is_running():
             await asyncio.sleep(1)
     except asyncio.CancelledError:
-        logger.warning('received kill event')
+        logger.warning("received kill event")
     finally:
         await get_manager_instance().shutdown()
         if runner:
             await runner.close()
 
+
 def read_stdin() -> str:
     from sys import stdin
+
     user_input = stdin.read()
     logger.debug(user_input)
     return user_input
 
+
 async def main():
-    parser = argparse.ArgumentParser(description=f'{config.app_name} is a tool to detect patterns and alerts in clickhouse and others database')
-    parser.add_argument('--api', required=False, default=False, action='store_true', help='Enable api, required for clicksiem-backend')
-    parser.add_argument('-p', '--port', default=config.default_port, type=int, help=f'specify api port, default: {config.default_port}')
-    parser.add_argument('-r', '--runner', default=config.default_runner, type=str, help=f'Runner file containing webhook, datasources, detectors and rules. Default: {config.default_runner}')
-    parser.add_argument('--stdin', default=False, action='store_true', help='Read file from stdin')
-    parser.add_argument('--version', default=False, action='store_true', help='Project version')
-    parser.add_argument('-v', '--verbose', default=False, action='store_true', help='Add verbosity')
+    parser = argparse.ArgumentParser(
+        description=f"{config.app_name} is a tool to detect patterns and alerts in clickhouse and others database"
+    )
+    parser.add_argument(
+        "--api",
+        required=False,
+        default=False,
+        action="store_true",
+        help="Enable api, required for clicksiem-backend",
+    )
+    parser.add_argument(
+        "-p",
+        "--port",
+        default=config.default_port,
+        type=int,
+        help=f"specify api port, default: {config.default_port}",
+    )
+    parser.add_argument(
+        "-r",
+        "--runner",
+        default=config.default_runner,
+        type=str,
+        help=f"Runner file containing webhook, datasources, detectors and rules. Default: {config.default_runner}",
+    )
+    parser.add_argument(
+        "--stdin", default=False, action="store_true", help="Read file from stdin"
+    )
+    parser.add_argument(
+        "--version", default=False, action="store_true", help="Project version"
+    )
+    parser.add_argument(
+        "-v", "--verbose", default=False, action="store_true", help="Add verbosity"
+    )
     args = parser.parse_args()
     config.logConfig(verbose=args.verbose)
 
     if args.version:
         print(version)
         exit(0)
-    
+
     if not f_exists(args.runner) and not args.stdin:
-        logger.fatal(f'File {args.runner} does not exists')
+        logger.fatal(f"File {args.runner} does not exists")
         exit(1)
     runner = await load_runner(args)
     tasks = [loop_run(runner)]
@@ -95,8 +129,10 @@ async def main():
         tasks.append(load_api(args))
     await asyncio.gather(*tasks)
 
+
 def run():
     asyncio.run(main())
+
 
 if __name__ == "__main__":
     run()

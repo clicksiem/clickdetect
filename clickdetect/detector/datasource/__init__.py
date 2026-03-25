@@ -1,4 +1,4 @@
-from typing import Dict, List, Type
+from typing import List, Type
 from .base import BaseDataSource
 from .clickhouse import ClickhouseDataSource
 from .loki import LokiDataSource
