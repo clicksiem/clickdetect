@@ -4,5 +4,5 @@ uv.lock
 .cache/
 docs/dist/
 runner.yml
-test*.yml
+test*
 .ruff_cache
