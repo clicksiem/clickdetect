@@ -72,4 +72,4 @@ podman run -v ./runner.yml:/app/runner.yml -p 8080 ghcr.io/clicksiem/clickdetect
 
 * E-mail: me@souzo.me
 * Matrix: @souzo:matrix.org
-* Linkedin: [https://www.linkedin.com/in/vinicius-f-a76ba51b5/](https://www.linkedin.com/in/vinicius-f-a76ba51b5/)
+* Linkedin: [https://www.linkedin.com/in/vinicius-m-a76ba51b5/](https://www.linkedin.com/in/vinicius-m-a76ba51b5/)
