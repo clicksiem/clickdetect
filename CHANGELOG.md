@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.1.1] - 2026-03-28
+
+### 🪝 Webhook Changes
+
+- Refactoring the webhook base class
+
+
+### 🗃️ Datasource Changes
+
+- Refactoring datasource base class
+
 ## [1.1.0] - 2026-03-25
 
 ### 🚀 Features
