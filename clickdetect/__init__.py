@@ -12,10 +12,30 @@ from .detector.runner import Runner
 from .detector.manager import Manager, get_manager_instance
 from .detector.config import version
 from .detector import config
+from .detector.datasource import datasources
+from .detector.webhooks import webhooks
 
 config.logConfig()
 logger = getLogger(__name__)
 
+def print_webhooks():
+    for w in webhooks:
+        print(f"  Webhook: {w._name()}")
+        for param in w._params():
+            print(
+                f"\tName: {param.name}({param.type.__name__}) {'Required' if param.required else 'Optional'}. {f'Help: {param.help}' if param.help else ''}", end=' '
+            )
+            if not param.required:
+                print(f" Default: {param.default!r}")
+            else:
+                print()
+        print('\n')
+    exit(0)
+
+def print_datasources():
+    for ds in datasources:
+        print(ds._name())
+    exit(0)
 
 async def load_api(args: Any):
     app = FastAPI(title=config.app_name)
@@ -125,6 +145,15 @@ async def main():
         action="store_true",
         help="Do not start detectors on start",
     )
+    parser.add_argument(
+        "--list-webhooks", default=False, action="store_true", help="List all webhooks"
+    )
+    parser.add_argument(
+        "--list-datasources",
+        default=False,
+        action="store_true",
+        help="List all datasources",
+    )
 
     args = parser.parse_args()
     config.logConfig(verbose=args.verbose)
@@ -133,9 +162,16 @@ async def main():
         print(version)
         exit(0)
 
+    if args.list_webhooks:
+        print_webhooks()
+
+    if args.list_datasources:
+        print_datasources()
+
     if not f_exists(args.runner) and not args.stdin:
         logger.fatal(f"File {args.runner} does not exists")
         exit(1)
+
     runner = await load_runner(args)
     tasks = [loop_run(runner)]
     if args.api:
@@ -147,7 +183,6 @@ async def main():
 
 def run():
     asyncio.run(main())
-
 
 if __name__ == "__main__":
     run()
