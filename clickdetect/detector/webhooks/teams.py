@@ -1,7 +1,7 @@
-from typing import Any, Dict
+from typing import Dict, List
 from aiohttp import ClientSession, ClientTimeout
 from logging import getLogger
-from .base import BaseWebhook
+from .base import BaseWebhook, BaseWebhookParameters
 
 logger = getLogger(__name__)
 
@@ -64,23 +64,12 @@ class TeamsWebhook(BaseWebhook):
     def _name(cls) -> str:
         return "teams"
 
-    def to_dict(self) -> Dict:
-        return {
-            "type": TeamsWebhook._name(),
-            "name": self.name,
-            "url": self.url,
-            "verify": self.verify,
-            "timeout": self.timeout,
-            "template": self.template,
-        }
-
-    async def _parse(self, data: Any):
-        url = data.get("url")
-        if not url:
-            raise Exception("Invalid parameters: url is required")
-
-        self.name = data.get("name")
-        self.url = url
-        self.verify = data.get("verify", False)
-        self.timeout = data.get("timeout", 10)
-        self.template = data.get("template", DEFAULT_TEMPLATE)
+    @classmethod
+    def _params(cls) -> List[BaseWebhookParameters]:
+        return [
+            BaseWebhookParameters('name', str, False, 'Webhook name'),
+            BaseWebhookParameters('url', str, True, 'Teams webhook URL'),
+            BaseWebhookParameters('verify', bool, False, 'SSL verify', False),
+            BaseWebhookParameters('timeout', int, False, 'Timeout in seconds', 10),
+            BaseWebhookParameters('template', str, False, 'Message template', DEFAULT_TEMPLATE),
+        ]

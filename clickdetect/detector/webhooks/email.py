@@ -1,9 +1,9 @@
 import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
-from typing import Any, Dict, List
+from typing import Dict, List
 from logging import getLogger
-from .base import BaseWebhook
+from .base import BaseWebhook, BaseWebhookParameters
 
 logger = getLogger(__name__)
 
@@ -34,6 +34,7 @@ class EmailWebhook(BaseWebhook):
     use_tls: bool
     subject: str
     template: str
+    params: List[BaseWebhookParameters] = []
 
     async def close(self):
         pass
@@ -72,44 +73,17 @@ class EmailWebhook(BaseWebhook):
     def _name(cls) -> str:
         return "email"
 
-    def to_dict(self) -> Dict:
-        return {
-            "type": EmailWebhook._name(),
-            "name": self.name,
-            "host": self.host,
-            "port": self.port,
-            "username": self.username,
-            "password": self.password,
-            "from": self.from_addr,
-            "to": self.to_addrs,
-            "use_tls": self.use_tls,
-            "subject": self.subject,
-            "template": self.template,
-        }
-
-    async def _parse(self, data: Any):
-        host = data.get("host")
-        port = data.get("port", 587)
-        username = data.get("username")
-        password = data.get("password")
-        from_addr = data.get("from")
-        to_addrs = data.get("to")
-
-        if not host or not username or not password or not from_addr or not to_addrs:
-            raise Exception(
-                "Invalid parameters: host, username, password, from and to are required"
-            )
-
-        if isinstance(to_addrs, str):
-            to_addrs = [to_addrs]
-
-        self.name = data.get("name")
-        self.host = host
-        self.port = port
-        self.username = username
-        self.password = password
-        self.from_addr = from_addr
-        self.to_addrs = to_addrs
-        self.use_tls = data.get("use_tls", False)
-        self.subject = data.get("subject", "[ALERT] ClickDetect")
-        self.template = data.get("template", DEFAULT_TEMPLATE)
+    @classmethod
+    def _params(cls) -> List[BaseWebhookParameters]:
+        return [
+            BaseWebhookParameters('name', str, False, 'Webhook name'),
+            BaseWebhookParameters('host', str, True, 'SMTP hostname or ip'),
+            BaseWebhookParameters('port', int, False, 'SMTP Port', 587),
+            BaseWebhookParameters('username', str, True, 'SMTP user'),
+            BaseWebhookParameters('password', str, True, 'SMTP pass'),
+            BaseWebhookParameters('from', str, True, 'SMTP from', attr_name='from_addr'),
+            BaseWebhookParameters('to', list, True, 'SMTP to (string or list)', attr_name='to_addrs'),
+            BaseWebhookParameters('use_tls', bool, False, 'Use SMTP_SSL', False),
+            BaseWebhookParameters('subject', str, False, 'Email subject', '[ALERT] ClickDetect - {{rule.name}}'),
+            BaseWebhookParameters('template', str, False, 'Email body template', DEFAULT_TEMPLATE),
+        ]

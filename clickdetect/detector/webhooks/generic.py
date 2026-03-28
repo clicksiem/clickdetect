@@ -1,7 +1,7 @@
-from typing import Any, Dict
+from typing import Any, Dict, List
 from aiohttp import ClientSession, ClientTimeout
 from logging import getLogger
-from .base import BaseWebhook
+from .base import BaseWebhook, BaseWebhookParameters
 
 logger = getLogger(__name__)
 
@@ -44,32 +44,19 @@ class GenericWebhook(BaseWebhook):
     def _name(cls) -> str:
         return "generic"
 
-    def to_dict(self) -> Dict:
-        return {
-            "type": GenericWebhook._name(),
-            "name": self.name,
-            "url": self.url,
-            "headers": self.headers,
-            "verify": self.verify,
-            "timeout": self.timeout,
-            "template": self.template,
-        }
+    @classmethod
+    def _params(cls) -> List[BaseWebhookParameters]:
+        return [
+            BaseWebhookParameters('name', str, False, 'Webhook name'),
+            BaseWebhookParameters('url', str, True, 'Webhook URL'),
+            BaseWebhookParameters('headers', dict, False, 'HTTP headers', {}),
+            BaseWebhookParameters('verify', bool, False, 'SSL verify', False),
+            BaseWebhookParameters('timeout', int, False, 'Timeout in seconds', 10),
+            BaseWebhookParameters('template', str, False, 'Message template'),
+        ]
 
     async def _parse(self, data: Any):
-        name = data.get("name")
-        url = data.get("url")
-        headers = data.get("headers", {})
-        verify = data.get("verify", False)
-        timeout = data.get("timeout", 10)
-        template = data.get("template", self.template)
-
-        headers = {k.lower(): v for k, v in headers.items()}
-        if not headers.get("content-type"):
-            headers["content-type"] = "application/json"
-
-        self.name = name
-        self.url = url
-        self.headers = headers
-        self.verify = verify
-        self.timeout = timeout
-        self.template = template
+        await super()._parse(data)
+        self.headers = {k.lower(): v for k, v in self.headers.items()}
+        if not self.headers.get("content-type"):
+            self.headers["content-type"] = "application/json"

@@ -1,9 +1,9 @@
 import os
-from typing import Any, Dict
+from typing import Dict, List
 from logging import getLogger
 from .. import config
 from ..utils import machine_device_id
-from .base import BaseWebhook
+from .base import BaseWebhook, BaseWebhookParameters
 from nio import AsyncClient, AsyncClientConfig
 
 logger = getLogger(__name__)
@@ -78,31 +78,14 @@ class MatrixWebhook(BaseWebhook):
     def _name(cls) -> str:
         return "matrix"
 
-    def to_dict(self) -> Dict:
-        return {
-            "type": MatrixWebhook._name(),
-            "name": self.name,
-            "url": self.url,
-            "username": self.username,
-            "password": self.password,
-            "room_id": self.room_id,
-            "verify": self.verify,
-            "template": self.template,
-        }
-
-    async def _parse(self, data: Any):
-        url = data.get("url")
-        username = data.get("username")
-        password = data.get("password")
-        room_id = data.get("room_id")
-
-        if not url or not username or not password or not room_id:
-            raise Exception("Invalid parameters required")
-
-        self.name = data.get("name")
-        self.url = url
-        self.username = username
-        self.password = password
-        self.room_id = room_id
-        self.verify = data.get("verify", True)
-        self.template = data.get("template", DEFAULT_TEMPLATE)
+    @classmethod
+    def _params(cls) -> List[BaseWebhookParameters]:
+        return [
+            BaseWebhookParameters('name', str, False, 'Webhook name'),
+            BaseWebhookParameters('url', str, True, 'Matrix homeserver URL'),
+            BaseWebhookParameters('username', str, True, 'Matrix username'),
+            BaseWebhookParameters('password', str, True, 'Matrix password'),
+            BaseWebhookParameters('room_id', str, True, 'Matrix room ID'),
+            BaseWebhookParameters('verify', bool, False, 'SSL verify', True),
+            BaseWebhookParameters('template', str, False, 'Message template', DEFAULT_TEMPLATE),
+        ]

@@ -1,6 +1,6 @@
 import logging
-from clickdetect.detector.webhooks.base import BaseWebhook
-from typing import Any, Dict
+from clickdetect.detector.webhooks.base import BaseWebhook, BaseWebhookParameters
+from typing import Any, Dict, List
 from requests import Session
 
 logger = logging.getLogger(__name__)
@@ -47,34 +47,21 @@ class ForgejoWebhook(BaseWebhook):
         )
         res.raise_for_status()
 
+    @classmethod
+    def _params(cls) -> List[BaseWebhookParameters]:
+        return [
+            BaseWebhookParameters('name', str, False, 'Webhook name'),
+            BaseWebhookParameters('url', str, True, 'Forgejo base URL'),
+            BaseWebhookParameters('owner', str, True, 'Repository owner'),
+            BaseWebhookParameters('repository', str, True, 'Repository name'),
+            BaseWebhookParameters('token', str, True, 'API token'),
+            BaseWebhookParameters('title', str, False, 'Issue title template', 'alert: {{ rule.name }}'),
+            BaseWebhookParameters('template', str, False, 'Issue body template', DEFAULT_TEMPLATE),
+        ]
+
     async def _parse(self, data: Any):
-        url: str = data.get("url")
-        owner = data.get("owner")
-        repository = data.get("repository")
-        token = data.get("token")
-
-        if not url or not owner or not repository or not token:
-            logger.error(f"Invalid parameters provided: {data}")
-            return
-
-        self.name = data.get("name")
-        self.url = url.rstrip("/")
-        self.owner = owner
-        self.repository = repository
-        self.token = token
-        self.title = data.get("title", "alert: {{ rule.name }}")
-        self.template = data.get("template", DEFAULT_TEMPLATE)
-
-    def to_dict(self) -> Dict:
-        return {
-            "type": self._name(),
-            "name": self.name,
-            "url": self.url,
-            "owner": self.owner,
-            "repository": self.repository,
-            "title": self.title,
-            "token": self.token,
-        }
+        await super()._parse(data)
+        self.url = self.url.rstrip("/")
 
     @classmethod
     def _name(cls) -> str:
