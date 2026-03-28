@@ -34,7 +34,16 @@ def print_webhooks():
 
 def print_datasources():
     for ds in datasources:
-        print(ds._name())
+        print(f"  Webhook: {ds._name()}")
+        for param in ds._params():
+            print(
+                f"\tName: {param.name}({param.type.__name__}) {'Required' if param.required else 'Optional'}. {f'Help: {param.help}' if param.help else ''}", end=' '
+            )
+            if not param.required:
+                print(f" Default: {param.default!r}")
+            else:
+                print()
+        print('\n')
     exit(0)
 
 async def load_api(args: Any):

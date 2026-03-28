@@ -1,9 +1,9 @@
 import os
-from typing import Dict, List
+from typing import List
 from logging import getLogger
 from .. import config
-from ..utils import machine_device_id
-from .base import BaseWebhook, BaseWebhookParameters
+from ..utils import machine_device_id, Parameters
+from .base import BaseWebhook
 from nio import AsyncClient, AsyncClientConfig
 
 logger = getLogger(__name__)
@@ -79,13 +79,13 @@ class MatrixWebhook(BaseWebhook):
         return "matrix"
 
     @classmethod
-    def _params(cls) -> List[BaseWebhookParameters]:
+    def _params(cls) -> List[Parameters]:
         return [
-            BaseWebhookParameters('name', str, False, 'Webhook name'),
-            BaseWebhookParameters('url', str, True, 'Matrix homeserver URL'),
-            BaseWebhookParameters('username', str, True, 'Matrix username'),
-            BaseWebhookParameters('password', str, True, 'Matrix password'),
-            BaseWebhookParameters('room_id', str, True, 'Matrix room ID'),
-            BaseWebhookParameters('verify', bool, False, 'SSL verify', True),
-            BaseWebhookParameters('template', str, False, 'Message template', DEFAULT_TEMPLATE),
+            Parameters('name', str, False, 'Webhook name'),
+            Parameters('url', str, True, 'Matrix homeserver URL'),
+            Parameters('username', str, True, 'Matrix username'),
+            Parameters('password', str, True, 'Matrix password'),
+            Parameters('room_id', str, True, 'Matrix room ID'),
+            Parameters('verify', bool, False, 'SSL verify', True),
+            Parameters('template', str, False, 'Message template', DEFAULT_TEMPLATE),
         ]

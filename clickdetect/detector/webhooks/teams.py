@@ -1,7 +1,8 @@
 from typing import Dict, List
 from aiohttp import ClientSession, ClientTimeout
 from logging import getLogger
-from .base import BaseWebhook, BaseWebhookParameters
+from .base import BaseWebhook
+from ..utils import Parameters
 
 logger = getLogger(__name__)
 
@@ -65,11 +66,11 @@ class TeamsWebhook(BaseWebhook):
         return "teams"
 
     @classmethod
-    def _params(cls) -> List[BaseWebhookParameters]:
+    def _params(cls) -> List[Parameters]:
         return [
-            BaseWebhookParameters('name', str, False, 'Webhook name'),
-            BaseWebhookParameters('url', str, True, 'Teams webhook URL'),
-            BaseWebhookParameters('verify', bool, False, 'SSL verify', False),
-            BaseWebhookParameters('timeout', int, False, 'Timeout in seconds', 10),
-            BaseWebhookParameters('template', str, False, 'Message template', DEFAULT_TEMPLATE),
+            Parameters('name', str, False, 'Webhook name'),
+            Parameters('url', str, True, 'Teams webhook URL'),
+            Parameters('verify', bool, False, 'SSL verify', False),
+            Parameters('timeout', int, False, 'Timeout in seconds', 10),
+            Parameters('template', str, False, 'Message template', DEFAULT_TEMPLATE),
         ]

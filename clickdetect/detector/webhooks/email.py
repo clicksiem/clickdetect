@@ -3,7 +3,8 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from typing import Dict, List
 from logging import getLogger
-from .base import BaseWebhook, BaseWebhookParameters
+from .base import BaseWebhook
+from ..utils import Parameters
 
 logger = getLogger(__name__)
 
@@ -34,7 +35,7 @@ class EmailWebhook(BaseWebhook):
     use_tls: bool
     subject: str
     template: str
-    params: List[BaseWebhookParameters] = []
+    params: List[Parameters] = []
 
     async def close(self):
         pass
@@ -74,16 +75,16 @@ class EmailWebhook(BaseWebhook):
         return "email"
 
     @classmethod
-    def _params(cls) -> List[BaseWebhookParameters]:
+    def _params(cls) -> List[Parameters]:
         return [
-            BaseWebhookParameters('name', str, False, 'Webhook name'),
-            BaseWebhookParameters('host', str, True, 'SMTP hostname or ip'),
-            BaseWebhookParameters('port', int, False, 'SMTP Port', 587),
-            BaseWebhookParameters('username', str, True, 'SMTP user'),
-            BaseWebhookParameters('password', str, True, 'SMTP pass'),
-            BaseWebhookParameters('from', str, True, 'SMTP from', attr_name='from_addr'),
-            BaseWebhookParameters('to', list, True, 'SMTP to (string or list)', attr_name='to_addrs'),
-            BaseWebhookParameters('use_tls', bool, False, 'Use SMTP_SSL', False),
-            BaseWebhookParameters('subject', str, False, 'Email subject', '[ALERT] ClickDetect - {{rule.name}}'),
-            BaseWebhookParameters('template', str, False, 'Email body template', DEFAULT_TEMPLATE),
+            Parameters('name', str, False, 'Webhook name'),
+            Parameters('host', str, True, 'SMTP hostname or ip'),
+            Parameters('port', int, False, 'SMTP Port', 587),
+            Parameters('username', str, True, 'SMTP user'),
+            Parameters('password', str, True, 'SMTP pass'),
+            Parameters('from', str, True, 'SMTP from', attr_name='from_addr'),
+            Parameters('to', list, True, 'SMTP to (string or list)', attr_name='to_addrs'),
+            Parameters('use_tls', bool, False, 'Use SMTP_SSL', False),
+            Parameters('subject', str, False, 'Email subject', '[ALERT] ClickDetect - {{rule.name}}'),
+            Parameters('template', str, False, 'Email body template', DEFAULT_TEMPLATE),
         ]

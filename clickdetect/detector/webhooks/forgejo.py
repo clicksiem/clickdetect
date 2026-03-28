@@ -1,5 +1,6 @@
 import logging
-from clickdetect.detector.webhooks.base import BaseWebhook, BaseWebhookParameters
+from clickdetect.detector.webhooks.base import BaseWebhook
+from clickdetect.detector.utils import Parameters
 from typing import Any, Dict, List
 from requests import Session
 
@@ -48,15 +49,15 @@ class ForgejoWebhook(BaseWebhook):
         res.raise_for_status()
 
     @classmethod
-    def _params(cls) -> List[BaseWebhookParameters]:
+    def _params(cls) -> List[Parameters]:
         return [
-            BaseWebhookParameters('name', str, False, 'Webhook name'),
-            BaseWebhookParameters('url', str, True, 'Forgejo base URL'),
-            BaseWebhookParameters('owner', str, True, 'Repository owner'),
-            BaseWebhookParameters('repository', str, True, 'Repository name'),
-            BaseWebhookParameters('token', str, True, 'API token'),
-            BaseWebhookParameters('title', str, False, 'Issue title template', 'alert: {{ rule.name }}'),
-            BaseWebhookParameters('template', str, False, 'Issue body template', DEFAULT_TEMPLATE),
+            Parameters('name', str, False, 'Webhook name'),
+            Parameters('url', str, True, 'Forgejo base URL'),
+            Parameters('owner', str, True, 'Repository owner'),
+            Parameters('repository', str, True, 'Repository name'),
+            Parameters('token', str, True, 'API token'),
+            Parameters('title', str, False, 'Issue title template', 'alert: {{ rule.name }}'),
+            Parameters('template', str, False, 'Issue body template', DEFAULT_TEMPLATE),
         ]
 
     async def _parse(self, data: Any):

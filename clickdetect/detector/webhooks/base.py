@@ -1,22 +1,13 @@
-from typing import Any, Dict, Type, List
+from typing import Any, Dict, List
 from jinja2 import Environment
-from dataclasses import dataclass
-
-@dataclass()
-class BaseWebhookParameters:
-    name: str
-    type: Type
-    required: bool
-    help: str = ''
-    default: Any | None = None
-    attr_name: str | None = None  # attribute name when it differs from the config key
+from ..utils import Parameters
 
 class BaseWebhook:
     jinja_env: Environment = Environment()
     template: str = '{"rule": {{ rule }}, "data": {{ data }}, "detector": {{ detector }} }, "time": {{ time }}, "datasource": {{ datasource }} }'
     name: str
     type: str
-    params: List[BaseWebhookParameters] = []
+    params: List[Parameters] = []
 
     async def close(self):
         pass
@@ -60,5 +51,5 @@ class BaseWebhook:
         raise NotImplementedError()
 
     @classmethod
-    def _params(cls) -> List[BaseWebhookParameters]:
+    def _params(cls) -> List[Parameters]:
         raise NotImplementedError()
