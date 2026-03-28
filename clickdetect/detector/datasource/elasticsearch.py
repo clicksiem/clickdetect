@@ -1,8 +1,9 @@
-from typing import Any, Dict
+from typing import Any, Dict, List
 from logging import getLogger
 import json
 import aiohttp
 
+from ..utils import Parameters
 from .base import BaseDataSource, DataSourceQueryResult
 
 logger = getLogger(__name__)
@@ -81,30 +82,14 @@ class ElasticsearchDataSource(BaseDataSource):
     def _name(cls) -> str:
         return "elasticsearch"
 
-    def to_dict(self) -> Dict:
-        return {
-            "name": self._name(),
-            "host": self.host,
-            "port": self.port,
-            "index": self.index,
-            "username": self.username,
-            "password": self.password,
-            "api_key": self.api_key,
-            "verify": self.verify,
-        }
-
-    async def _parse(self, _obj: Any):
-        host = _obj.get("host")
-        port = _obj.get("port")
-        index = _obj.get("index")
-
-        if not host or not port or not index:
-            raise Exception("Invalid parameters: host, port and index are required")
-
-        self.host = host
-        self.port = port
-        self.index = index
-        self.username = _obj.get("username")
-        self.password = _obj.get("password")
-        self.api_key = _obj.get("api_key")
-        self.verify = _obj.get("verify", False)
+    @classmethod
+    def _params(cls) -> List[Parameters]:
+        return [
+            Parameters('host', str, True, 'Elasticsearch host'),
+            Parameters('port', int, True, 'Elasticsearch port'),
+            Parameters('index', str, True, 'Elasticsearch index'),
+            Parameters('username', str, False, 'Username'),
+            Parameters('password', str, False, 'Password'),
+            Parameters('api_key', str, False, 'API key'),
+            Parameters('verify', bool, False, 'Verify SSL', False),
+        ]

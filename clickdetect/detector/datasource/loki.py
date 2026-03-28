@@ -1,7 +1,9 @@
-from typing import Any, Dict
+from typing import Any, List
 from logging import getLogger
 from .base import BaseDataSource, DataSourceQueryResult
 import aiohttp
+
+from ..utils import Parameters
 
 logger = getLogger(__name__)
 
@@ -19,7 +21,7 @@ class LokiDataSource(BaseDataSource):
         scheme = "https" if self.verify else "http"
         return f"{scheme}://{self.host}:{self.port}"
 
-    def _headers(self) -> Dict[str, str]:
+    def _headers(self) -> dict:
         headers = {"Content-Type": "application/json"}
         if self.org_id:
             headers["X-Scope-OrgID"] = self.org_id
@@ -94,31 +96,13 @@ class LokiDataSource(BaseDataSource):
     def _name(cls) -> str:
         return "loki"
 
-    def to_dict(self) -> Dict:
-        return {
-            "name": self._name(),
-            "host": self.host,
-            "port": self.port,
-            "username": self.username,
-            "password": self.password,
-            "verify": self.verify,
-            "org_id": self.org_id,
-        }
-
-    async def _parse(self, _obj: Any):
-        host = _obj.get("host")
-        port = _obj.get("port", 3100)
-        username = _obj.get("username")
-        password = _obj.get("password")
-        verify = _obj.get("verify", False)
-        org_id = _obj.get("org_id")
-
-        if not host:
-            raise Exception("Invalid parameters: host are required")
-
-        self.host = host
-        self.port = port
-        self.username = username
-        self.password = password
-        self.verify = verify
-        self.org_id = org_id
+    @classmethod
+    def _params(cls) -> List[Parameters]:
+        return [
+            Parameters('host', str, True, 'Loki host'),
+            Parameters('port', int, False, 'Loki port', 3100),
+            Parameters('username', str, False, 'Username'),
+            Parameters('password', str, False, 'Password'),
+            Parameters('verify', bool, False, 'Verify SSL', False),
+            Parameters('org_id', str, False, 'Loki org ID (X-Scope-OrgID)'),
+        ]

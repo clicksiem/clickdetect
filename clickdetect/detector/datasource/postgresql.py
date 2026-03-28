@@ -1,6 +1,8 @@
-from typing import Any, Dict
+from typing import List
 from logging import getLogger
 import asyncpg
+
+from ..utils import Parameters
 from .base import BaseDataSource, DataSourceQueryResult
 
 logger = getLogger(__name__)
@@ -50,30 +52,12 @@ class PostgreSQLDataSource(BaseDataSource):
     def _name(cls) -> str:
         return "postgresql"
 
-    def to_dict(self) -> Dict:
-        return {
-            "name": self._name(),
-            "database": self.database,
-            "host": self.host,
-            "port": self.port,
-            "username": self.username,
-            "password": self.password,
-        }
-
-    async def _parse(self, _obj: Any):
-        database = _obj.get("database")
-        host = _obj.get("host")
-        port = _obj.get("port")
-        username = _obj.get("username")
-        password = _obj.get("password")
-
-        if not database or not host or not port or not username or not password:
-            raise Exception(
-                "Invalid parameters: database, host, port, username and password are required"
-            )
-
-        self.database = database
-        self.host = host
-        self.port = port
-        self.username = username
-        self.password = password
+    @classmethod
+    def _params(cls) -> List[Parameters]:
+        return [
+            Parameters('database', str, True, 'Database name'),
+            Parameters('host', str, True, 'PostgreSQL host'),
+            Parameters('port', int, True, 'PostgreSQL port'),
+            Parameters('username', str, True, 'Username'),
+            Parameters('password', str, True, 'Password'),
+        ]

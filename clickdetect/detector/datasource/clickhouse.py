@@ -1,4 +1,5 @@
-from typing import Any, Dict
+from ..utils import Parameters
+from typing import List
 from clickhouse_connect import get_async_client
 from clickhouse_connect.driver.asyncclient import AsyncClient
 from logging import getLogger
@@ -50,31 +51,13 @@ class ClickhouseDataSource(BaseDataSource):
     def _name(cls) -> str:
         return "clickhouse"
 
-    def to_dict(self) -> Dict:
-        return {
-            "name": self._name(),
-            "database": self.database,
-            "host": self.host,
-            "port": self.port,
-            "username": self.username,
-            "password": self.password,
-            "verify": self.verify,
-        }
-
-    async def _parse(self, _obj: Any):
-        database = _obj.get("database", "default")
-        host = _obj.get("host")
-        port = _obj.get("port")
-        username = _obj.get("username")
-        password = _obj.get("password")
-        verify = _obj.get("verify", False)
-
-        if not host or not port or not username or not password:
-            raise Exception(f"Invalid parameters: {self.to_dict().items()}")
-
-        self.database = database
-        self.host = host
-        self.port = port
-        self.username = username
-        self.password = password
-        self.verify = verify
+    @classmethod
+    def _params(cls) -> List[Parameters]:
+        return [
+            Parameters('database', str, False, 'Clickhouse database', 'default'),
+            Parameters('host', str, True, 'Clickhouse host'),
+            Parameters('port', int, False, 'Clickhouse port', 8123),
+            Parameters('username', str, False, 'Clickhouse username', 'default'),
+            Parameters('password', str, False, 'Clickhouse password', 'default'),
+            Parameters('verify', bool, False, 'Verify SSL connection', False),
+        ]

@@ -1,6 +1,7 @@
+from attr import dataclass
 from datetime import datetime, timedelta, timezone
 from re import fullmatch
-from typing import Any
+from typing import Any, Type
 from datetime import date
 from uuid import UUID
 from dataclasses import is_dataclass, asdict
@@ -64,3 +65,13 @@ def json_serializer(obj: Any) -> Any:
     if is_dataclass(obj):
         return asdict(obj)
     raise TypeError(f"Type {type(obj)} not serializable")
+
+
+@dataclass
+class Parameters:
+    name: str
+    type: Type
+    required: bool
+    help: str = ''
+    default: Any | None = None
+    attr_name: str | None = None  # attribute name when it differs from the config key

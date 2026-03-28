@@ -1,5 +1,6 @@
+from ..utils import Parameters
 from dataclasses import dataclass
-from typing import Any, Dict
+from typing import Any, Dict, List
 
 
 @dataclass()
@@ -13,6 +14,8 @@ class DataSourceQueryResult:
 
 
 class BaseDataSource:
+    params: List[Parameters] = []
+
     async def connect(self):
         raise NotImplementedError()
 
@@ -23,8 +26,32 @@ class BaseDataSource:
     def _name(cls) -> str:
         raise NotImplementedError()
 
-    async def _parse(self, _obj: Any):
-        raise NotImplementedError()
+    async def _parse(self, data: Any):
+        self.params = self._params()
+
+        if missing := next(
+            (p.name for p in self.params if p.required and p.name not in data), None
+        ):
+            raise ValueError(f"Required param not provided: {missing}")
+
+        for param in self.params:
+            value = data.get(param.name, param.default)
+            if value is None:
+                continue
+            if param.type is not None:
+                if param.type is list:
+                    value = [value] if not isinstance(value, list) else value
+                else:
+                    value = param.type(value)
+            setattr(self, param.attr_name or param.name, value)
 
     def to_dict(self) -> Dict:
+        result: Dict[str, Any] = {"type": self._name()}
+        for param in self._params():
+            attr = param.attr_name or param.name
+            result[param.name] = getattr(self, attr, param.default)
+        return result
+
+    @classmethod
+    def _params(cls) -> List[Parameters]:
         raise NotImplementedError()
