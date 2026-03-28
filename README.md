@@ -1,5 +1,7 @@
 # Clickdetect
 
+Made in 🇧🇷
+
 Clickdetect is a SIEM engine on steroids, no lock-in with any vendors and powerfull detection.
 
 Follow the doc: [https://clickdetect.souzo.me](https://clickdetect.souzo.me)
@@ -33,6 +35,18 @@ podman run -v ./runner.yml:/app/runner.yml -p 8080 clickdetect --api -p 8080
 ```sh
 podman run -v ./runner.yml:/app/runner.yml -p 8080 ghcr.io/clicksiem/clickdetect:latest --api -p 8080
 ```
+
+## Options
+
+| Flag | Default | Description |
+|---|---|---|
+| `--api` | off | Start the REST API server |
+| `-p`, `--port` | `8080` | Port for the API server |
+| `-r`, `--runner` | `runner.yml` | Path to the runner configuration file |
+| `--stdin` | off | Read the runner configuration from stdin |
+| `--verbose` | off | Verbose mode |
+| `--reload` | off | Hot reload rules |
+
 
 ## Roadmap
 

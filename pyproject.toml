@@ -71,7 +71,7 @@ commit_parsers = [
     { message = ".*\\(api\\)", group = "<!-- 4 --> 🔌 API"},
     { message = "^feat", group = "<!-- 0 --> 🚀 Features"},
     { message = "^fix", group = "<!-- 1 --> 🐛 Bug Fixes"},
-    { message = "^doc", group = "<!-- 6 --> 📝 Documentation"},
+    { message = "^docs", group = "<!-- 6 --> 📝 Documentation"},
     { message = "^perf", group = "<!-- 5 --> ⚡ Performance"},
     { message = "^refactor", group = "<!-- 7 --> ♻️ Refactor"},
     { message = '.*', group="<!-- 8 -->🔧 Other changes", default_scope = "other"}
