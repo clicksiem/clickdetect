@@ -3,6 +3,6 @@ __pycache__/
 uv.lock
 .cache/
 docs/dist/
-runner.yml
+/runner.yml
 test*
 .ruff_cache

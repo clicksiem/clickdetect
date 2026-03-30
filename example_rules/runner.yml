@@ -1,0 +1,43 @@
+datasource:
+    type: clickhouse
+    host: localhost
+    port: 8123
+    verify: false
+    username: default
+    password: default
+    database: soc
+
+webhooks:
+    generic_webhook:
+        type: generic
+        url: http://localhost:3000/alerts/create/clickdetect
+        headers:
+          X-Type: test
+
+detectors:
+    5m_detector:
+        name: "5m interval"
+        for: "5m"
+        tenant: 'all'
+        description: "detect rules with 5 min interval"
+        rules:
+            - "clickhouse/rules/ad/*.yml"
+        webhooks:
+            - generic_webhook
+        data:
+          var1: 'yy'
+          var2: 'xx'
+
+    10s_detector:
+        name: "10s interval"
+        for: "10s"
+        tenant: 'all'
+        description: "detect rules with 10 seconds interval"
+        rules:
+            - "clickhouse/rules/windows/*"
+        webhooks:
+            - generic_webhook
+        data:
+          var1: 'yy'
+          var2: 'xx'
+
