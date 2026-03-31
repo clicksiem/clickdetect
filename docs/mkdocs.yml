@@ -59,6 +59,7 @@ nav:
   - Blog:
     - blog/index.md
 plugins:
+  - social
   - minify:
       minify_html: true
       minify_js: true

@@ -22,7 +22,7 @@ authors = [
 [dependency-groups]
 dev = [
     "git-cliff>=2.12.0",
-    "mkdocs-material>=9.7.5",
+    "mkdocs-material[imaging]>=9.7.5",
     "mkdocs-minify-plugin>=0.8.0",
     "mkdocs-redirects>=1.2.2",
     "mkdocs-rss-plugin>=1.17.9",
