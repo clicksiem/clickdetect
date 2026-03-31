@@ -101,8 +101,8 @@ class LokiDataSource(BaseDataSource):
         return [
             Parameters('host', str, True, 'Loki host'),
             Parameters('port', int, False, 'Loki port', 3100),
-            Parameters('username', str, False, 'Username'),
-            Parameters('password', str, False, 'Password'),
+            Parameters('username', str, False, 'Username', is_sensive_field=True),
+            Parameters('password', str, False, 'Password', is_sensive_field=True),
             Parameters('verify', bool, False, 'Verify SSL', False),
             Parameters('org_id', str, False, 'Loki org ID (X-Scope-OrgID)'),
         ]

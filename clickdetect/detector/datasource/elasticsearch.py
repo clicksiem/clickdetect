@@ -88,8 +88,8 @@ class ElasticsearchDataSource(BaseDataSource):
             Parameters('host', str, True, 'Elasticsearch host'),
             Parameters('port', int, True, 'Elasticsearch port'),
             Parameters('index', str, True, 'Elasticsearch index'),
-            Parameters('username', str, False, 'Username'),
-            Parameters('password', str, False, 'Password'),
+            Parameters('username', str, False, 'Username', is_sensive_field=True),
+            Parameters('password', str, False, 'Password', is_sensive_field=True),
             Parameters('api_key', str, False, 'API key'),
             Parameters('verify', bool, False, 'Verify SSL', False),
         ]

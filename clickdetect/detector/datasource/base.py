@@ -48,6 +48,8 @@ class BaseDataSource:
     def to_dict(self) -> Dict:
         result: Dict[str, Any] = {"type": self._name()}
         for param in self._params():
+            if param.is_sensive_field:  # not send fields like 'password'
+                continue
             attr = param.attr_name or param.name
             result[param.name] = getattr(self, attr, param.default)
         return result

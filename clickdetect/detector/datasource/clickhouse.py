@@ -55,9 +55,9 @@ class ClickhouseDataSource(BaseDataSource):
     def _params(cls) -> List[Parameters]:
         return [
             Parameters('database', str, False, 'Clickhouse database', 'default'),
-            Parameters('host', str, True, 'Clickhouse host'),
+            Parameters('host', str, True, 'Clickhouse host', is_sensive_field=True),
             Parameters('port', int, False, 'Clickhouse port', 8123),
-            Parameters('username', str, False, 'Clickhouse username', 'default'),
-            Parameters('password', str, False, 'Clickhouse password', 'default'),
+            Parameters('username', str, False, 'Clickhouse username', 'default', is_sensive_field=True),
+            Parameters('password', str, False, 'Clickhouse password', 'default', is_sensive_field=True),
             Parameters('verify', bool, False, 'Verify SSL connection', False),
         ]

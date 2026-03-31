@@ -58,6 +58,6 @@ class PostgreSQLDataSource(BaseDataSource):
             Parameters('database', str, True, 'Database name'),
             Parameters('host', str, True, 'PostgreSQL host'),
             Parameters('port', int, True, 'PostgreSQL port'),
-            Parameters('username', str, True, 'Username'),
-            Parameters('password', str, True, 'Password'),
+            Parameters('username', str, True, 'Username', is_sensive_field=True),
+            Parameters('password', str, True, 'Password', is_sensive_field=True),
         ]
