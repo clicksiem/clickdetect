@@ -4,7 +4,7 @@ from ..utils import Parameters
 
 class BaseWebhook:
     jinja_env: Environment = Environment()
-    template: str = '{"rule": {{ rule }}, "data": {{ data }}, "detector": {{ detector }} }, "time": {{ time }}, "datasource": {{ datasource }} }'
+    template: str = '{ "rule": {{ rule }}, "data": {{ data }}, "detector": {{ detector }}, "time": {{ time }} }'
     name: str
     type: str
     params: List[Parameters] = []

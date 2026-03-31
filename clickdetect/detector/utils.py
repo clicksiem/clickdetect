@@ -5,6 +5,7 @@ from typing import Any, Type
 from datetime import date
 from uuid import UUID
 from dataclasses import is_dataclass, asdict
+from json import dumps
 import socket
 import uuid
 
@@ -67,11 +68,17 @@ def json_serializer(obj: Any) -> Any:
     raise TypeError(f"Type {type(obj)} not serializable")
 
 
+class JsonDict(dict):
+    def __str__(self):
+        return dumps(self, default=json_serializer)
+
+
 @dataclass
 class Parameters:
     name: str
     type: Type
     required: bool
-    help: str = ''
+    help: str = ""
     default: Any | None = None
     attr_name: str | None = None  # attribute name when it differs from the config key
+    is_sensive_field: bool = False

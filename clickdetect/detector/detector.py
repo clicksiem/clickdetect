@@ -78,11 +78,13 @@ class Detector:
             for webhook in self._webhooks:
                 try:
                     template_data = {
-                        "rule": rule.to_dict(),
-                        "data": value.to_dict(),
-                        "detector": self.to_dict(),
-                        "datasource": self.datasource.to_dict(),
-                        "time": {"startime": startime, "endtime": endtime},
+                        "rule": utils.JsonDict(rule.to_dict()),
+                        "data": utils.JsonDict(value.to_dict()),
+                        "detector": utils.JsonDict(self.to_dict()),
+                        "datasource": utils.JsonDict(self.datasource.to_dict()),
+                        "time": utils.JsonDict(
+                            {"startime": startime, "endtime": endtime}
+                        ),
                     }
                     template = self.jinja_env.from_string(webhook.template).render(
                         **template_data
