@@ -48,6 +48,7 @@ nav:
       - Elasticsearch: datasource/elasticsearch.md
       - Loki: datasource/loki.md
       - PostgreSQL: datasource/postgresql.md
+      - VictoriaLogs: datasource/victorialogs.md
     - Webhooks:
       - Overview: webhooks/index.md
       - Generic: webhooks/generic.md

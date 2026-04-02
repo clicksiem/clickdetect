@@ -6,13 +6,12 @@ Query log streams from Grafana Loki.
 
 ```yaml
 datasource:
-    type: loki       # required
-    host: localhost  # required
-    port: 3100       # optional
-    username: admin  # optional
-    password: pass   # optional
-    verify: false    # optional default(false) — use https when true
-    org_id: '...'    # optional — sets X-Scope-OrgID header (multi-tenant)
+    type: loki                          # required
+    url: http://localhost:3100          # required
+    username: admin                     # optional
+    password: pass                      # optional
+    verify: false                       # optional default(false) — verify SSL certificate
+    org_id: '...'                       # optional default('fake') — sets X-Scope-OrgID header (multi-tenant)
 ```
 
 ## Notes
