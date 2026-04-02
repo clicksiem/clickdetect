@@ -36,8 +36,7 @@ class LokiDataSource(BaseDataSource):
                 connector=connector, auth=self._auth(), headers=self._headers()
             )
             async with self._session.get(f"{self._base_url}/ready") as resp:
-                if resp.status != 200:
-                    raise Exception(f"Loki not ready, status: {resp.status}")
+                resp.raise_for_status()
         except Exception as ex:
             logger.error(f"Datasource connect exception. url: {self.url} | {ex}")
             if self._session:
@@ -55,9 +54,7 @@ class LokiDataSource(BaseDataSource):
             async with self._session.get(
                 f"{self._base_url}/loki/api/v1/query_range", params=params
             ) as resp:
-                if resp.status != 200:
-                    body = await resp.text()
-                    raise Exception(f"HTTP {resp.status}: {body}")
+                resp.raise_for_status()
                 payload = await resp.json()
                 return await self._parse_result(payload)
         except Exception as ex:
