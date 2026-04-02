@@ -1,25 +1,20 @@
 from typing import Any, List
 from logging import getLogger
 from .base import BaseDataSource, DataSourceQueryResult
-import aiohttp
-
 from ..utils import Parameters
+import aiohttp
 
 logger = getLogger(__name__)
 
 
 class LokiDataSource(BaseDataSource):
-    host: str
-    port: int
-    username: str | None = None
-    password: str | None = None
-    verify: bool = False
-    org_id: str | None = None
+    url: str
+    username: str
+    password: str
+    verify: bool
+    org_id: str
     _session: aiohttp.ClientSession | None = None
-
-    def _base_url(self) -> str:
-        scheme = "https" if self.verify else "http"
-        return f"{scheme}://{self.host}:{self.port}"
+    _base_url: str
 
     def _headers(self) -> dict:
         headers = {"Content-Type": "application/json"}
@@ -33,16 +28,18 @@ class LokiDataSource(BaseDataSource):
         return None
 
     async def connect(self):
+        logger.debug(f"Connecting to {self.url}")
+        self._base_url = self.url.rstrip("/")
         try:
-            connector = aiohttp.TCPConnector(ssl=False)
+            connector = aiohttp.TCPConnector(verify_ssl=self.verify)
             self._session = aiohttp.ClientSession(
                 connector=connector, auth=self._auth(), headers=self._headers()
             )
-            async with self._session.get(f"{self._base_url()}/ready") as resp:
+            async with self._session.get(f"{self._base_url}/ready") as resp:
                 if resp.status != 200:
                     raise Exception(f"Loki not ready, status: {resp.status}")
         except Exception as ex:
-            logger.error(f"Failed to connect to Loki at {self.host}:{self.port} | {ex}")
+            logger.error(f"Datasource connect exception. url: {self.url} | {ex}")
             if self._session:
                 await self._session.close()
             self._session = None
@@ -53,9 +50,10 @@ class LokiDataSource(BaseDataSource):
         if not self._session:
             return None
         try:
+            logger.debug(f"Sending query to {self.url}")
             params = {"query": data, "limit": 5000}
             async with self._session.get(
-                f"{self._base_url()}/loki/api/v1/query_range", params=params
+                f"{self._base_url}/loki/api/v1/query_range", params=params
             ) as resp:
                 if resp.status != 200:
                     body = await resp.text()
@@ -72,9 +70,9 @@ class LokiDataSource(BaseDataSource):
     async def _parse_result(self, payload: Any) -> DataSourceQueryResult:
         result_type = payload.get("data", {}).get("resultType", "streams")
         results = payload.get("data", {}).get("result", [])
+        rows = []
 
         if result_type == "matrix":
-            rows = []
             total = 0
             for series in results:
                 metric = series.get("metric", {})
@@ -85,7 +83,6 @@ class LokiDataSource(BaseDataSource):
                     total += float(values[-1][1])
             return DataSourceQueryResult(int(total), rows, self._name())
 
-        rows = []
         for stream in results:
             labels = stream.get("stream", {})
             for ts, line in stream.get("values", []):
@@ -99,10 +96,11 @@ class LokiDataSource(BaseDataSource):
     @classmethod
     def _params(cls) -> List[Parameters]:
         return [
-            Parameters('host', str, True, 'Loki host'),
-            Parameters('port', int, False, 'Loki port', 3100),
-            Parameters('username', str, False, 'Username', is_sensive_field=True),
-            Parameters('password', str, False, 'Password', is_sensive_field=True),
-            Parameters('verify', bool, False, 'Verify SSL', False),
-            Parameters('org_id', str, False, 'Loki org ID (X-Scope-OrgID)'),
+            Parameters("url", str, True, "Loki url: http://localhost:3100"),
+            Parameters("username", str, False, "Username", is_sensive_field=True),
+            Parameters("password", str, False, "Password", is_sensive_field=True),
+            Parameters("verify", bool, False, "Verify SSL", False),
+            Parameters(
+                "org_id", str, False, "Loki org ID (X-Scope-OrgID)", default="fake"
+            ),
         ]
