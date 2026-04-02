@@ -4,6 +4,7 @@ from .clickhouse import ClickhouseDataSource
 from .loki import LokiDataSource
 from .elasticsearch import ElasticsearchDataSource
 from .postgresql import PostgreSQLDataSource
+from .victorialogs import VictoriaLogsDataSource
 
 
 datasources: List[Type[BaseDataSource]] = [
@@ -11,4 +12,5 @@ datasources: List[Type[BaseDataSource]] = [
     LokiDataSource,
     ElasticsearchDataSource,
     PostgreSQLDataSource,
+    VictoriaLogsDataSource
 ]

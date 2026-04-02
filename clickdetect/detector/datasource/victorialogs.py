@@ -60,9 +60,7 @@ class VictoriaLogsDataSource(BaseDataSource):
             async with self._session.get(
                 f"{self._base_url}/select/logsql/query", params=params
             ) as resp:
-                if resp.status != 200:
-                    body = await resp.text()
-                    raise Exception(f"HTTP {resp.status}: {body}")
+                resp.raise_for_status()
                 body = await resp.text()
                 return self._parse_result(body)
         except Exception as ex:
@@ -82,6 +80,9 @@ class VictoriaLogsDataSource(BaseDataSource):
 
     @classmethod
     def _name(cls) -> str:
+        logger.warning("This datasource integration hasn't been tested yet")
+        logger.warning("I only did the integration based on victorialogs api documentation")
+        logger.warning("Please open an issue if you can validate this datasource")
         return "victorialogs"
 
     @classmethod
