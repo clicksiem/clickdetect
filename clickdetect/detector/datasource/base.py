@@ -1,3 +1,4 @@
+from ..rules import Rule
 from ..utils import Parameters
 from dataclasses import dataclass
 from typing import Any, Dict, List
@@ -19,11 +20,18 @@ class BaseDataSource:
     async def connect(self):
         raise NotImplementedError()
 
+    async def _query(self, data: str, rule: Rule) -> DataSourceQueryResult | None:
+        return await self.query(data)
+
     async def query(self, data: str) -> DataSourceQueryResult | None:
         raise NotImplementedError()
 
     @classmethod
     def _name(cls) -> str:
+        raise NotImplementedError()
+
+    @classmethod
+    def _params(cls) -> List[Parameters]:
         raise NotImplementedError()
 
     async def _parse(self, data: Any):
@@ -54,6 +62,3 @@ class BaseDataSource:
             result[param.name] = getattr(self, attr, param.default)
         return result
 
-    @classmethod
-    def _params(cls) -> List[Parameters]:
-        raise NotImplementedError()

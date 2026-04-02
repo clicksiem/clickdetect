@@ -120,7 +120,7 @@ class Detector:
                 logger.debug(f"Rule id: {rule.id}")
                 logger.debug(f"Rule name: {rule.name}")
                 logger.debug(f"rule query:\n {query}\n")
-                result = await self.datasource.query(query)
+                result = await self.datasource._query(query, rule)
 
                 if result is None:
                     logger.warning("Datasource unavailable, skipping rule evaluation")
