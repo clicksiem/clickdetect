@@ -20,7 +20,7 @@ logger = getLogger(__name__)
 
 def print_webhooks():
     for w in webhooks:
-        print(f"  Webhook: {w._name()}")
+        print(f"Webhook: {w._name()}")
         for param in w._params():
             print(
                 f"\tName: {param.name}({param.type.__name__}) {'Required' if param.required else 'Optional'}. {f'Help: {param.help}' if param.help else ''}", end=' '
@@ -34,7 +34,7 @@ def print_webhooks():
 
 def print_datasources():
     for ds in datasources:
-        print(f"  Webhook: {ds._name()}")
+        print(f"Datasources: {ds._name()}")
         for param in ds._params():
             print(
                 f"\tName: {param.name}({param.type.__name__}) {'Required' if param.required else 'Optional'}. {f'Help: {param.help}' if param.help else ''}", end=' '
