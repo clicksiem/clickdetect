@@ -1,10 +1,28 @@
-# Clickdetect
-
 Made in 🇧🇷
+
+# Clickdetect
 
 Clickdetect is a SIEM engine on steroids, no lock-in with any vendors and powerfull detection.
 
 Follow the doc: [https://clickdetect.souzo.me](https://clickdetect.souzo.me)
+
+## Supported sources
+
+### Datasources
+
+- Clickhouse 
+- Loki
+- VictoriaLogs
+- PostgreSQL
+- Elastic/Opensearch
+
+### Webhooks
+
+- Generic
+- DFIR Iris
+- Forgejo
+- Email
+- Microsoft Teams
 
 ## Starting guide
 
@@ -21,7 +39,6 @@ uv run clickdetect --api
 ```
 
 ### Docker/Podman
-
 
 #### Local
 
@@ -49,7 +66,6 @@ podman run -v ./runner.yml:/app/runner.yml -p 8080 ghcr.io/clicksiem/clickdetect
 | `--list-webhooks` | off | List webhooks |
 | `--list-datasources` | off | List datasources |
 
-
 ## Roadmap
 
 ### Webhooks
@@ -76,8 +92,8 @@ podman run -v ./runner.yml:/app/runner.yml -p 8080 ghcr.io/clicksiem/clickdetect
 ### Datasources
 
 - [ ] Add support for Splunk
-- [ ] Add support for OpenSearch
-- [ ] Add support for Prometheus/VictoriaMetrics (metrics-based detection)
+- [ ] Add support for OpenSearch/Elasticsearch
+- [x] Add support for VictoriaLogs
 
 ### API & Observability
 
