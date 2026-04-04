@@ -77,8 +77,12 @@ class Detector:
         async with self._webhook_sem:
             for webhook in self._webhooks:
                 try:
+                    rule_dict = rule.to_dict()
+                    rule_dict["description"] = self.jinja_env.from_string(
+                        rule.description
+                    ).render(rule=rule, detector=self, data=rule.data)
                     template_data = {
-                        "rule": utils.JsonDict(rule.to_dict()),
+                        "rule": utils.JsonDict(rule_dict),
                         "data": utils.JsonDict(value.to_dict()),
                         "detector": utils.JsonDict(self.to_dict()),
                         "datasource": utils.JsonDict(self.datasource.to_dict()),
