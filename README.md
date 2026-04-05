@@ -1,4 +1,6 @@
-Made in 🇧🇷
+Made in :brazil:
+
+---
 
 # Clickdetect
 
