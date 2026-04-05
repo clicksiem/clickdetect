@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.4.0] - 2026-04-05
+
+### 🚀 Features
+
+- Render description field as Jinja2 template
+
 ## [1.3.0] - 2026-04-02
 
 ### 🐛 Bug Fixes
