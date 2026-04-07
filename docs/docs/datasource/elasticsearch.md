@@ -1,8 +1,5 @@
 # Elasticsearch
 
-> Elasticsearch integration is under testing - Can you help me? open an issue!
-
-
 Query events from an Elasticsearch index.
 
 ## Config
@@ -10,8 +7,7 @@ Query events from an Elasticsearch index.
 ```yaml
 datasource:
     type: elasticsearch # required
-    host: localhost     # required
-    port: 9200          # required
+    url: localhost      # required
     index: my-index-*   # required
     username: elastic   # optional
     password: pass      # optional
