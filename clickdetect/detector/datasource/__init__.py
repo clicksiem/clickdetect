@@ -5,12 +5,14 @@ from .loki import LokiDataSource
 from .elasticsearch import ElasticsearchDataSource
 from .postgresql import PostgreSQLDataSource
 from .victorialogs import VictoriaLogsDataSource
+from .opensearch import OpensearchDataSource
 
 
 datasources: List[Type[BaseDataSource]] = [
     ClickhouseDataSource,
     LokiDataSource,
     ElasticsearchDataSource,
+    OpensearchDataSource,
     PostgreSQLDataSource,
     VictoriaLogsDataSource
 ]
