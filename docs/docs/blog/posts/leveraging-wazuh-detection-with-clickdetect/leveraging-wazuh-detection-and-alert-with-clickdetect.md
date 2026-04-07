@@ -34,6 +34,9 @@ Detections like:
 
 ## Why?
 
+
+![Detection engine](/assets/post-leveraging-wazuh-with-clickdetect.png)
+
 Wazuh's (OSSEC-based) alert engine has several fundamental limitations by design. Wazuh 5 may address some of them, but it looks like it will remain tied to OpenSearch.
 
 What Wazuh's alert engine can't do:
@@ -381,7 +384,7 @@ rule: |-
     LIMIT 100
 ```
 
-Note: You can use Jinja template in description like the example above.
+Note: You can use Jinja template in description like the example above. I added this feature while writing this post :)
 
 ## Conclusion
 
