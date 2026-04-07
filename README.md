@@ -72,8 +72,8 @@ podman run -v ./runner.yml:/app/runner.yml -p 8080 ghcr.io/clicksiem/clickdetect
 
 ### Webhooks
 
-- [ ] Complete DFIR-IRIS webhook integration
-- [ ] Add Slack webhook
+- [x] Complete DFIR-IRIS webhook integration
+- [x] Add Slack webhook
 - [ ] Add Discord webhook
 - [ ] Add PagerDuty webhook
 - [ ] Add Telegram webhook
@@ -94,7 +94,7 @@ podman run -v ./runner.yml:/app/runner.yml -p 8080 ghcr.io/clicksiem/clickdetect
 ### Datasources
 
 - [ ] Add support for Splunk
-- [ ] Add support for OpenSearch/Elasticsearch
+- [x] Add support for OpenSearch/Elasticsearch
 - [x] Add support for VictoriaLogs
 
 ### API & Observability
