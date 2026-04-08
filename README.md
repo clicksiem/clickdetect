@@ -25,6 +25,7 @@ Follow the doc: [https://clickdetect.souzo.me](https://clickdetect.souzo.me)
 - Forgejo
 - Email
 - Microsoft Teams
+- Slack
 
 ## Starting guide
 
