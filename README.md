@@ -4,7 +4,7 @@ Made in :brazil:
 
 # Clickdetect
 
-Clickdetect is a SIEM engine on steroids, no lock-in with any vendors and powerfull detection.
+Clickdetect is a generic alerting and detection engine that supports any data source and integrates with any webhook. It is vendor-agnostic, with no lock-in, and enables powerful, flexible detection workflows.
 
 Follow the doc: [https://clickdetect.souzo.me](https://clickdetect.souzo.me)
 
