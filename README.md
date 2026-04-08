@@ -4,6 +4,8 @@ Made in :brazil:
 
 # Clickdetect
 
+![clickdetect running](docs/docs/assets/clickdetect-runner-demo.mp4)
+
 Clickdetect is a generic alerting and detection engine that supports any data source and integrates with any webhook. It is vendor-agnostic, with no lock-in, and enables powerful, flexible detection workflows.
 
 Follow the doc: [https://clickdetect.souzo.me](https://clickdetect.souzo.me)
