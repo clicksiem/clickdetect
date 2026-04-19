@@ -79,7 +79,7 @@ podman run -v ./runner.yml:/app/runner.yml -p 8080 ghcr.io/clicksiem/clickdetect
 - [x] Add Slack webhook
 - [ ] Add Discord webhook
 - [ ] Add PagerDuty webhook
-- [ ] Add Telegram webhook
+- [x] Add Telegram webhook
 - [ ] Add Opsgenie webhook
 
 ### Alert Management
