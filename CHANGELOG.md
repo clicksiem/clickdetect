@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.6.0] - 2026-04-19
+
+### 🪝 Webhook Changes
+
+- Add telegram webhook
+
 ## [1.5.0] - 2026-04-07
 
 ### 🪝 Webhook Changes
