@@ -29,6 +29,8 @@ Check it out on GitHub: [https://github.com/clicksiem/clickdetect](https://githu
 
 You can also read my previous blog post about [Building a powerful SIEM with Clickhouse and Clickdetect](https://medium.com/@souzo/building-a-powerful-siem-with-clickhouse-and-clickdetect-ae68a4495a76).
 
+![Clickdetect vs ElastAlert](clickdetect-vs-elastalert.png)
+
 # Why replace ElastAlert with Clickdetect?
 
 You may think — who is this guy trying to tell me that Clickdetect is better than ElastAlert when I've been using ElastAlert for years?
