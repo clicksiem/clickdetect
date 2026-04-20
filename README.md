@@ -28,6 +28,7 @@ Follow the doc: [https://clickdetect.souzo.me](https://clickdetect.souzo.me)
 - Email
 - Microsoft Teams
 - Slack
+- Telegram
 
 ## Starting guide
 
