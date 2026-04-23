@@ -29,6 +29,7 @@ Follow the doc: [https://clickdetect.souzo.me](https://clickdetect.souzo.me)
 - Microsoft Teams
 - Slack
 - Telegram
+- Discord
 
 ## Starting guide
 
@@ -79,7 +80,7 @@ podman run -v ./runner.yml:/app/runner.yml -p 8080 ghcr.io/clicksiem/clickdetect
 
 - [x] Complete DFIR-IRIS webhook integration
 - [x] Add Slack webhook
-- [ ] Add Discord webhook
+- [x] Add Discord webhook
 - [ ] Add PagerDuty webhook
 - [x] Add Telegram webhook
 - [ ] Add Opsgenie webhook

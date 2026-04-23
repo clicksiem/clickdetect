@@ -1,7 +1,8 @@
+from typing import List, Type
+from .discord import DiscordWebhook
 from .base import BaseWebhook
 from .telegram import TelegramWebhook
 from .forgejo import ForgejoWebhook
-from typing import List, Type
 from .generic import GenericWebhook
 from .teams import TeamsWebhook
 from .email import EmailWebhook
@@ -17,6 +18,7 @@ webhooks: List[Type[BaseWebhook]] = [
     ForgejoWebhook,
     DfirIRISWebhook,
     SlackWebhook,
-    TelegramWebhook
+    TelegramWebhook,
+    DiscordWebhook,
     # MatrixWebhook,
 ]
