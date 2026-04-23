@@ -1,6 +1,6 @@
 # Matrix Hook
 
-> Is under development
+> **Not available yet.** The Matrix webhook is under development and is currently disabled — using `type: matrix` will result in an error at runtime.
 
 Send alert to matrix
 

@@ -65,6 +65,13 @@ The `rule` query is rendered with Jinja2 before execution. The following variabl
 | `rule.id` | string | Rule ID |
 | `rule.name` | string | Rule name |
 | `rule.data` | dict | Custom data set in the rule's `data` field |
+| `startime` | string | Unix timestamp (int as string) of the interval start |
+| `endtime` | string | Unix timestamp (int as string) of the interval end |
+| `interval` | string | Detector interval (e.g. `"5m"`) |
+| `rule_id` | string | Shorthand for `rule.id` |
+| `rule_level` | int | Shorthand for `rule.level` |
+| `rule_group` | string | Shorthand for `rule.group` |
+| `datasource` | dict | Datasource configuration dict |
 
 ### Custom Jinja2 filters
 
@@ -113,6 +120,9 @@ When a rule fires and a webhook is called, the following variables are available
 | `data.len` | Number of rows returned by the query |
 | `data.value` | List of result rows (each row is a dict) |
 | `detector` | The Detector object (name, tenant, data, etc.) |
+| `datasource` | The datasource configuration dict |
+| `time.startime` | Unix timestamp (float) of the interval start |
+| `time.endtime` | Unix timestamp (float) of the interval end |
 
 
 ## Tips

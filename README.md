@@ -69,6 +69,7 @@ podman run -v ./runner.yml:/app/runner.yml -p 8080 ghcr.io/clicksiem/clickdetect
 | `--stdin` | off | Read the runner configuration from stdin |
 | `--verbose` | off | Verbose mode |
 | `--reload` | off | Hot reload rules |
+| `--no-start` | off | Do not start detectors on start |
 | `--list-webhooks` | off | List webhooks |
 | `--list-datasources` | off | List datasources |
 

@@ -41,6 +41,9 @@ uv run clickdetect [OPTIONS]
 | `--stdin` | off | Read the runner configuration from stdin |
 | `--verbose` | off | Verbose mode |
 | `--reload` | off | Hot reload rules |
+| `--no-start` | off | Do not start detectors on start |
+| `--list-webhooks` | off | List all available webhook types and exit |
+| `--list-datasources` | off | List all available datasource types and exit |
 
 
 # Docker / Podman
