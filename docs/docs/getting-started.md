@@ -17,7 +17,7 @@ uv run clickdetect --api --reload
 ### 1. Pull image
 
 ```sh
-podman pull ghcr.io:clicksiem/clickdetect:latest
+podman pull ghcr.io/clicksiem/clickdetect:latest
 ```
 
 ### 2. Create compose.yml
@@ -25,7 +25,7 @@ podman pull ghcr.io:clicksiem/clickdetect:latest
 ```yaml
 services:
     clickdetect:
-        image: ghcr.io:clicksiem/clickdetect:latest
+        image: ghcr.io/clicksiem/clickdetect:latest
         ports:
             - 8080:8080
         command: --api
