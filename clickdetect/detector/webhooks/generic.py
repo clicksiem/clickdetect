@@ -33,11 +33,12 @@ class GenericWebhook(BaseWebhook):
                 headers=self.headers,
                 timeout=ClientTimeout(self.timeout),
             ) as _:
-                logger.info(f"Alert sended to {self.url}")
+                _.raise_for_status()
+                logger.info(f"alert sended to {self.name}")
                 pass
 
         except Exception as ex:
-            logger.error("Alert not sended")
+            logger.error("alert not sent")
             logger.error(data)
             logger.error(str(ex))
 

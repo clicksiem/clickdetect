@@ -30,18 +30,24 @@ class DfirIRISWebhook(BaseWebhook):
 
         level = rule.get("level", 0)
         alert_severity_id = (
-            1 if level <= 3 else
-            2 if level <= 7 else
-            3 if level <= 10 else
-            4 if level <= 13 else
-            5
+            1
+            if level <= 3
+            else 2
+            if level <= 7
+            else 3
+            if level <= 10
+            else 4
+            if level <= 13
+            else 5
         )
 
         tags = rule.get("tags", [])
         alert_data = {
             "alert_title": rule.get("name"),
             "alert_description": rule.get("description"),
-            "alert_source": j_data.get("detector", {}).get("datasource", {}).get("name"),
+            "alert_source": j_data.get("detector", {})
+            .get("datasource", {})
+            .get("name"),
             "alert_severity_id": alert_severity_id,
             "alert_status_id": 2,
             "alert_source_event_time": j_data.get("time", ""),
@@ -61,9 +67,9 @@ class DfirIRISWebhook(BaseWebhook):
                 timeout=ClientTimeout(10),
             ) as resp:
                 resp.raise_for_status()
-                logger.info(f"Alert sent to DFIR-IRIS (status {resp.status})")
+                logger.info(f"alert sent to DFIR-IRIS (status {resp.status})")
         except Exception as ex:
-            logger.error("Alert not sent to DFIR-IRIS")
+            logger.error("alert not sent to DFIR-IRIS")
             logger.error(data)
             logger.error(str(ex))
 
@@ -74,12 +80,14 @@ class DfirIRISWebhook(BaseWebhook):
     @classmethod
     def _params(cls) -> List[Parameters]:
         return [
-            Parameters('name', str, False, 'Webhook name'),
-            Parameters('url', str, True, 'DFIR-IRIS base URL'),
-            Parameters('api_key', str, True, 'DFIR-IRIS API key', is_sensive_field=True),
-            Parameters('customer_id', int, True, 'DFIR-IRIS customer ID'),
-            Parameters('headers', dict, False, 'Extra HTTP headers', {}),
-            Parameters('verify', bool, False, 'SSL verify', False),
+            Parameters("name", str, False, "Webhook name"),
+            Parameters("url", str, True, "DFIR-IRIS base URL"),
+            Parameters(
+                "api_key", str, True, "DFIR-IRIS API key", is_sensive_field=True
+            ),
+            Parameters("customer_id", int, True, "DFIR-IRIS customer ID"),
+            Parameters("headers", dict, False, "Extra HTTP headers", {}),
+            Parameters("verify", bool, False, "SSL verify", False),
         ]
 
     async def _parse(self, data: Any):

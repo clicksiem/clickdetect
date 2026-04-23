@@ -8,22 +8,6 @@ from ..utils import Parameters
 
 logger = getLogger(__name__)
 
-DEFAULT_TEMPLATE = """\
-[ALERT] {{ rule.name }}
-{% if rule.description %}
-{{ rule.description }}
-{% endif %}
-Rule ID  : {{ rule.id }}
-Level    : {{ rule.level }}
-Group    : {{ rule.group or "-" }}
-Tags     : {{ rule.tags | to_list or "-" }}
-Author   : {{ rule.author | to_list or "-" }}
-Detector : {{ detector.name }} (tenant: {{ detector.tenant }})
-Interval : {{ detector.for_time }}
-Matches  : {{ data.len }}
-"""
-
-
 class EmailWebhook(BaseWebhook):
     name: str
     host: str
@@ -86,5 +70,5 @@ class EmailWebhook(BaseWebhook):
             Parameters('to', list, True, 'SMTP to (string or list)', attr_name='to_addrs'),
             Parameters('use_tls', bool, False, 'Use SMTP_SSL', False),
             Parameters('subject', str, False, 'Email subject', '[ALERT] ClickDetect - {{rule.name}}'),
-            Parameters('template', str, False, 'Email body template', DEFAULT_TEMPLATE),
+            Parameters('template', str, False, 'Email body template', BaseWebhook._alternative_template()),
         ]

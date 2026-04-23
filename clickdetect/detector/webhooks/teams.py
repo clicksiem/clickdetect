@@ -51,13 +51,10 @@ class TeamsWebhook(BaseWebhook):
                 headers={"content-type": "application/json"},
                 timeout=ClientTimeout(self.timeout),
             ) as req:
-                if req.status != 200:
-                    body = await req.text()
-                    logger.error(f"Teams webhook returned {req.status}: {body}")
-                else:
-                    logger.info(f"Alert sent to Teams: {self.url}")
+                req.raise_for_status()
+                logger.info(f"alert sent to Teams: {self.name}")
         except Exception as ex:
-            logger.error("Alert not sent to Teams")
+            logger.error("alert not sent to Teams")
             logger.error(data)
             logger.error(str(ex))
 

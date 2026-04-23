@@ -6,21 +6,6 @@ from ..utils import Parameters
 
 logger = getLogger(__name__)
 
-DEFAULT_TEMPLATE = """\
-*[ALERT] {{ rule.name }}*
-{% if rule.description %}
-{{ rule.description }}
-{% endif %}
-*Rule ID*  : {{ rule.id }}
-*Level*    : {{ rule.level }}
-*Group*    : {{ rule.group or "-" }}
-*Tags*     : {{ rule.tags | to_list or "-" }}
-*Author*   : {{ rule.author | to_list or "-" }}
-*Detector* : {{ detector.name }} (tenant: {{ detector.tenant }})
-*Interval* : {{ detector.for_time }}
-*Matches*  : {{ data.len }}\
-"""
-
 
 class SlackWebhook(BaseWebhook):
     name: str
@@ -43,14 +28,16 @@ class SlackWebhook(BaseWebhook):
     async def send(self, data: str, template_data: Dict):
         try:
             logger.debug(f"sending alert to Slack: {self._base_url()}")
-            resp = await self.session.post(f'{self._base_url()}', json={"text": data}, ssl=self.verify, timeout=ClientTimeout(self.timeout))
-            if resp.status != 200:
-                body = await resp.text()
-                logger.error(f"Slack webhook returned {resp.status}: {body}")
-            resp.raise_for_status()
-            logger.info(f"Alert sent to Slack: {self.url}")
+            async with self.session.post(
+                f"{self._base_url()}",
+                json={"text": data},
+                ssl=self.verify,
+                timeout=ClientTimeout(self.timeout),
+            ) as resp:
+                resp.raise_for_status()
+            logger.info(f"alert sent to Slack: {self.name}")
         except Exception as ex:
-            logger.error("Alert not sent to Slack")
+            logger.error("alert not sent to Slack")
             logger.error(data)
             logger.error(str(ex))
 
@@ -61,9 +48,15 @@ class SlackWebhook(BaseWebhook):
     @classmethod
     def _params(cls) -> List[Parameters]:
         return [
-            Parameters('name', str, False, 'Webhook name'),
-            Parameters('url', str, True, 'Slack Incoming Webhook URL'),
-            Parameters('verify', bool, False, 'SSL verify', True),
-            Parameters('timeout', int, False, 'Timeout in seconds', 10),
-            Parameters('template', str, False, 'Message template', DEFAULT_TEMPLATE),
+            Parameters("name", str, False, "Webhook name"),
+            Parameters("url", str, True, "Slack Incoming Webhook URL"),
+            Parameters("verify", bool, False, "SSL verify", True),
+            Parameters("timeout", int, False, "Timeout in seconds", 10),
+            Parameters(
+                "template",
+                str,
+                False,
+                "Message template",
+                BaseWebhook._alternative_template(),
+            ),
         ]

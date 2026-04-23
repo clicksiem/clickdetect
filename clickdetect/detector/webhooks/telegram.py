@@ -6,22 +6,6 @@ from ..utils import Parameters
 
 logger = getLogger(__name__)
 
-DEFAULT_TEMPLATE = """
-[ALERT] {{ rule.name }}
-{% if rule.description %}
-{{ rule.description }}
-{% endif %}
-Rule ID  : {{ rule.id }}
-Level    : {{ rule.level }}
-Group    : {{ rule.group or "-" }}
-Tags     : {{ rule.tags | to_list or "-" }}
-Author   : {{ rule.author | to_list or "-" }}
-Detector : {{ detector.name }} (tenant: {{ detector.tenant }})
-Interval : {{ detector.for_time }}
-Matches  : {{ data.len }}
-"""
-
-
 class TelegramWebhook(BaseWebhook):
     name: str
     token: str
@@ -43,16 +27,12 @@ class TelegramWebhook(BaseWebhook):
             logger.debug(f"sending alert to telegram: {self.chat_id}")
             async with self.session.post(
                 f"https://api.telegram.org/bot{self.token}/sendMessage",
-                data={"chat_id": self.chat_id, "text": data},
+                json={"chat_id": self.chat_id, "text": data},
                 ssl=self.verify,
-                headers={"content-type": "application/json"},
                 timeout=ClientTimeout(self.timeout),
             ) as req:
-                if req.status != 200:
-                    body = await req.text()
-                    logger.error(f"telegram webhook returned {req.status}: {body}")
-                else:
-                    logger.info(f"alert sent to telegram: {self.chat_id}")
+                req.raise_for_status()
+                logger.info(f'alert sent to telegram: {self.name}')
         except Exception as ex:
             logger.error(f"alert not sent: {self.chat_id}")
             logger.error(data)
@@ -70,5 +50,5 @@ class TelegramWebhook(BaseWebhook):
             Parameters("chat_id", str, True, "Telegram chat id"),
             Parameters("verify", bool, False, "SSL verify", False),
             Parameters("timeout", int, False, "Timeout in seconds", 10),
-            Parameters("template", str, False, "Message template", DEFAULT_TEMPLATE),
+            Parameters("template", str, False, "Message template", BaseWebhook._alternative_template()),
         ]

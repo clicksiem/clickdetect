@@ -8,22 +8,7 @@ from nio import AsyncClient, AsyncClientConfig
 
 logger = getLogger(__name__)
 
-DEFAULT_TEMPLATE = """\
-[ALERT] {{ rule.name }}
-{% if rule.description %}
-{{ rule.description }}
-{% endif %}
-Rule ID  : {{ rule.id }}
-Level    : {{ rule.level }}
-Group    : {{ rule.group or "-" }}
-Tags     : {{ rule.tags | to_list or "-" }}
-Author   : {{ rule.author | to_list or "-" }}
-Detector : {{ detector.name }} (tenant: {{ detector.tenant }})
-Interval : {{ detector.for_time }}
-Matches  : {{ data.len }}
-"""
-
-# TODO: use requests, nio is soo heavy for this project
+# TODO: use aiohttp, nio is soo heavy for this project
 
 
 class MatrixWebhook(BaseWebhook):
@@ -87,5 +72,5 @@ class MatrixWebhook(BaseWebhook):
             Parameters('password', str, True, 'Matrix password'),
             Parameters('room_id', str, True, 'Matrix room ID'),
             Parameters('verify', bool, False, 'SSL verify', True),
-            Parameters('template', str, False, 'Message template', DEFAULT_TEMPLATE),
+            Parameters('template', str, False, 'Message template', BaseWebhook._alternative_template()),
         ]

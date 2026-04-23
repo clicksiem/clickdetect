@@ -2,6 +2,23 @@ from typing import Any, Dict, List
 from jinja2 import Environment
 from ..utils import Parameters
 
+DEFAULT_TEMPLATE = """
+[ALERT] {{ rule.name }}
+{% if rule.description %}
+{{ rule.description }}
+{% endif %}
+Rule ID  : {{ rule.id }}
+Level    : {{ rule.level }}
+Group    : {{ rule.group or "-" }}
+Tags     : {{ rule.tags | to_list or "-" }}
+Author   : {{ rule.author | to_list or "-" }}
+Detector : {{ detector.name }} (tenant: {{ detector.tenant }})
+Interval : {{ detector.for_time }}
+Matches  : {{ data.len }}
+Results  : {{ data.value }}
+"""
+
+
 class BaseWebhook:
     jinja_env: Environment = Environment()
     template: str = '{ "rule": {{ rule }}, "data": {{ data }}, "detector": {{ detector }}, "time": {{ time }} }'
@@ -25,7 +42,9 @@ class BaseWebhook:
     async def _parse(self, data: Any):
         self.params = self._params()
 
-        if missing := next((p.name for p in self.params if p.required and p.name not in data), None):
+        if missing := next(
+            (p.name for p in self.params if p.required and p.name not in data), None
+        ):
             raise ValueError(f"Required param not provided: {missing}")
 
         for param in self.params:
@@ -53,3 +72,7 @@ class BaseWebhook:
     @classmethod
     def _params(cls) -> List[Parameters]:
         raise NotImplementedError()
+
+    @classmethod
+    def _alternative_template(cls) -> str:
+        return DEFAULT_TEMPLATE
