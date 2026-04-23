@@ -58,6 +58,7 @@ nav:
       - Forgejo: webhooks/forgejo.md
       - DFIR-IRIS: webhooks/iris.md
       - Slack: webhooks/slack.md
+      - Telegram: webhooks/telegram.md
       - Matrix: webhooks/matrix.md
     - API: api.md
   - Blog:
