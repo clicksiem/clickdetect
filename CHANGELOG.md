@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.7.0] - 2026-04-23
+
+### 🪝 Webhook Changes
+
+- Add discord webhook
+
+- Refactoring the webhook default template and minor fixes
+
+
+### 📝 Documentation
+
+- Add telegram webhook documentation
+
 ## [1.6.0] - 2026-04-19
 
 ### 🪝 Webhook Changes
