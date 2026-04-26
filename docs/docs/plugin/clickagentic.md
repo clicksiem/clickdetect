@@ -15,6 +15,14 @@ plugins:
         think: false                # optional – enable extended thinking (supported providers only)
 ```
 
+## Install
+
+You need to install clickagentic group
+
+```
+uv sync --group clickagentic
+```
+
 ### Fields
 
 | Field | Required | Description |
