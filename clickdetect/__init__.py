@@ -9,7 +9,7 @@ from yaml import safe_load
 from .api.detector import router as detector_router
 from .api.rules import router as rules_router
 from .detector.runner import Runner
-from .detector.manager import Manager, get_manager_instance
+from .detector.manager import get_manager_instance
 from .detector.config import version
 from .detector import config
 from .detector.datasource import datasources
@@ -18,33 +18,38 @@ from .detector.webhooks import webhooks
 config.logConfig()
 logger = getLogger(__name__)
 
+
 def print_webhooks():
     for w in webhooks:
         print(f"Webhook: {w._name()}")
         for param in w._params():
             print(
-                f"\tName: {param.name}({param.type.__name__}) {'Required' if param.required else 'Optional'}. {f'Help: {param.help}' if param.help else ''}", end=' '
+                f"\tName: {param.name}({param.type.__name__}) {'Required' if param.required else 'Optional'}. {f'Help: {param.help}' if param.help else ''}",
+                end=" ",
             )
             if not param.required:
                 print(f" Default: {param.default!r}")
             else:
                 print()
-        print('\n')
+        print("\n")
     exit(0)
+
 
 def print_datasources():
     for ds in datasources:
         print(f"Datasources: {ds._name()}")
         for param in ds._params():
             print(
-                f"\tName: {param.name}({param.type.__name__}) {'Required' if param.required else 'Optional'}. {f'Help: {param.help}' if param.help else ''}", end=' '
+                f"\tName: {param.name}({param.type.__name__}) {'Required' if param.required else 'Optional'}. {f'Help: {param.help}' if param.help else ''}",
+                end=" ",
             )
             if not param.required:
                 print(f" Default: {param.default!r}")
             else:
                 print()
-        print('\n')
+        print("\n")
     exit(0)
+
 
 async def load_api(args: Any):
     app = FastAPI(title=config.app_name)
@@ -75,16 +80,11 @@ async def load_runner(args: Any) -> Runner | None:
         logger.warning("Runner not loaded")
         return None
 
-    detectors = await runner.get_detectors()
-    manager = Manager()
-
-    if not detectors:
+    if not await runner.get_detectors():
         logger.error("No detector found")
         return None
 
-    for detector in detectors:
-        await manager.run_detector(detector, not args.no_start)
-
+    await runner.start_detectors(not args.no_start)
     return runner
 
 
@@ -95,8 +95,8 @@ async def loop_run(runner: Runner | None = None):
     except asyncio.CancelledError:
         logger.warning("received kill event")
     finally:
-        await get_manager_instance().shutdown()
         if runner:
+            await runner.manager.shutdown()
             await runner.close()
 
 
@@ -192,6 +192,7 @@ async def main():
 
 def run():
     asyncio.run(main())
+
 
 if __name__ == "__main__":
     run()

@@ -41,3 +41,8 @@ detectors:
           var1: 'yy'
           var2: 'xx'
 
+plugins:
+  clickagentic: # plugin id
+    provider: 'openai' # provider: openai, anthropic, google, huggingface, ollama, openrouter, deepseek
+    model: 'gpt-5.2' # get model from your provider
+    token: 'xxx'

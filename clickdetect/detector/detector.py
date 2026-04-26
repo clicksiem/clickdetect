@@ -12,6 +12,7 @@ from jinja2 import Environment
 from .webhooks.base import BaseWebhook
 from .datasource.base import DataSourceQueryResult, BaseDataSource
 from .rules import Rule
+from .hooks import HookRegistry, EventEnum
 from . import utils
 from . import config
 
@@ -38,6 +39,7 @@ class Detector:
     _callback_rule_lock: a_lock = field(default_factory=a_lock)
     _webhook_sem: Semaphore = field(default_factory=Semaphore)
     _rule_eval_sem: Semaphore = field(default_factory=Semaphore)
+    _hooks: HookRegistry | None = field(default=None)
     jinja_env: Environment = field(default_factory=Environment)
 
     def __post_init__(self):
@@ -75,21 +77,34 @@ class Detector:
         value.datasource = self.datasource._name()
         startime, endtime = time
         async with self._webhook_sem:
+            rule_dict = rule.to_dict()
+            rule_dict["description"] = self.jinja_env.from_string(
+                rule.description
+            ).render(rule=rule, detector=self, data=rule.data)
+            template_data = {
+                "rule": utils.JsonDict(rule_dict),
+                "data": utils.JsonDict(value.to_dict()),
+                "detector": utils.JsonDict(self.to_dict()),
+                "datasource": utils.JsonDict(self.datasource.to_dict()),
+                "time": utils.JsonDict(
+                    {"startime": startime, "endtime": endtime}
+                ),
+            }
+
+            if self._hooks:
+                logger.debug('emiting on_rule_triggered to hooks')
+                hook_result = await self._hooks.emit(
+                    EventEnum.on_rule_triggered,
+                    rule=rule,
+                    detector=self,
+                    result=value,
+                    template_data=template_data,
+                )
+                logger.debug(f'webhook result {hook_result}')
+                template_data = hook_result.get('template_data', template_data)
+
             for webhook in self._webhooks:
                 try:
-                    rule_dict = rule.to_dict()
-                    rule_dict["description"] = self.jinja_env.from_string(
-                        rule.description
-                    ).render(rule=rule, detector=self, data=rule.data)
-                    template_data = {
-                        "rule": utils.JsonDict(rule_dict),
-                        "data": utils.JsonDict(value.to_dict()),
-                        "detector": utils.JsonDict(self.to_dict()),
-                        "datasource": utils.JsonDict(self.datasource.to_dict()),
-                        "time": utils.JsonDict(
-                            {"startime": startime, "endtime": endtime}
-                        ),
-                    }
                     template = self.jinja_env.from_string(webhook.template).render(
                         **template_data
                     )

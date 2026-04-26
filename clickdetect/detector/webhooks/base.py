@@ -7,16 +7,25 @@ DEFAULT_TEMPLATE = """
 {% if rule.description %}
 {{ rule.description }}
 {% endif %}
-Rule ID  : {{ rule.id }}
-Level    : {{ rule.level }}
-Group    : {{ rule.group or "-" }}
-Tags     : {{ rule.tags | to_list or "-" }}
-Author   : {{ rule.author | to_list or "-" }}
-Detector : {{ detector.name }} (tenant: {{ detector.tenant }})
-Interval : {{ detector.for_time }}
-Matches  : {{ data.len }}
-Results  : {{ data.value }}
-"""
+Rule ID: {{ rule.id }}
+Level: {{ rule.level }}
+Group: {{ rule.group or "-" }}
+Tags: {{ rule.tags | to_list or "-" }}
+Author: {{ rule.author | to_list or "-" }}
+Detector: {{ detector.name }} (tenant: {{ detector.tenant }})
+Interval: {{ detector.for_time }}
+Matches: {{ data.len }}
+Results: {{ data.value }}
+{% if clickagentic is defined %}
+--- clickagentic
+## plugin - Clickagentic
+Summary: {{ clickagentic.summary }}
+Severity: {{ clickagentic.severity }} (confidence: {{ clickagentic.confidence }}%)
+False Positive Score: {{ clickagentic.false_positive_score }}%
+Explanation: {{ clickagentic.explanation }}
+Mitigations:
+{% for m in clickagentic.mitigations %}- {{ m }}
+{% endfor %}{% endif %}"""
 
 
 class BaseWebhook:

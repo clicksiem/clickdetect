@@ -1,5 +1,5 @@
 import logging
-from typing import Dict, Type
+from typing import Dict
 from apscheduler.job import Job
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from datetime import datetime
@@ -8,32 +8,12 @@ from .detector import Detector
 
 logger = logging.getLogger(__name__)
 
-manager = None
 
-
-def get_manager_instance():
-    global manager
-    if not manager:
-        manager = Manager()
-    return manager
-
-
-class ManagerSingletonMeta(Type):
-    _instances = {}
-
-    def __call__(cls, *args, **kwargs):
-        if cls not in cls._instances:
-            instance = super().__call__(*args, **kwargs)
-            cls._instances[cls] = instance
-        return cls._instances[cls]
-
-
-class Manager(metaclass=ManagerSingletonMeta):
-    job_detectors: Dict[str, Detector] = {}
-
+class Manager:
     def __init__(self) -> None:
         self.scheduler = AsyncIOScheduler()
         self.scheduler.start()
+        self.job_detectors: Dict[str, Detector] = {}
 
     async def run_detector(
         self, detector: Detector, auto_start: bool = True
@@ -91,3 +71,18 @@ class Manager(metaclass=ManagerSingletonMeta):
 
     async def shutdown(self, wait: bool = True):
         self.scheduler.shutdown(wait=wait)
+
+
+_manager: Manager | None = None
+
+
+def set_manager_instance(m: Manager) -> None:
+    global _manager
+    _manager = m
+
+
+def get_manager_instance() -> Manager:
+    if not _manager:
+        raise RuntimeError("Manager not initialized")
+    return _manager
+

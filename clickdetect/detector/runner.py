@@ -1,8 +1,10 @@
-from typing import Any, List, Self
+from typing import Any, List, Self, Dict
 from logging import getLogger
 from .datasource.base import BaseDataSource
 from .datasource import datasources
 from .detector import Detector
+from .manager import Manager, set_manager_instance
+from .plugin import PluginSystem
 from .webhooks.generic import GenericWebhook
 from .webhooks import webhooks as w_webhooks
 from .watcher import RuleWatcher
@@ -10,8 +12,10 @@ logger = getLogger(__name__)
 
 
 class Runner:
+    plugins_config: List[Dict[str, Any]]
     def __init__(self, data: Any) -> None:
         self.data = data
+        self.plugins_config = []
 
     async def init(self) -> Self:
         await self.load_runner()
@@ -19,13 +23,41 @@ class Runner:
 
     async def load_runner(self):
         data = self.data
+        self.manager = Manager()
+        set_manager_instance(self.manager)
         self.datasource = await self.parse_datasource(data.get("datasource", None))
         self.webhooks = await self.parse_webhooks(data.get("webhooks", None))
         self.detectors = await self.parse_detectors(data.get("detectors", None))
+        self.plugin_system = await self.parse_plugins(data.get("plugins", None))
 
+        await self.load_detectors()
+        await self.load_plugins()
+        await self.load_datasource()
+
+
+    async def load_plugins(self):
+        for plugin in self.plugins_config:
+            plugin_id = plugin.get('id', None)
+            config = plugin.get('config', None)
+            if not plugin_id:
+                continue
+            await self.plugin_system.load_plugin_id(plugin_id, config)
+
+    async def load_datasource(self):
+        logger.info("Connecting in datasource")
+        try:
+            await self.datasource.connect()
+        except Exception as ex:
+            logger.error(
+                f"Error connecting in datasource: {self.datasource._name()} | {str(ex)}"
+            )
+            exit(1)
+
+    async def load_detectors(self):
         logger.info("loading detectors")
         for detector in self.detectors:
             detector.datasource = self.datasource
+            detector._hooks = self.plugin_system.hooks
             if self.webhooks:
                 for webhook in self.webhooks:
                     if webhook.name in detector.webhooks:
@@ -35,15 +67,6 @@ class Runner:
                             logger.error(f"webhook error: {str(ex)}")
                         finally:
                             detector._webhooks.append(webhook)
-
-        logger.info("Connecting in datasource")
-        try:
-            await self.datasource.connect()
-        except Exception as ex:
-            logger.error(
-                f"Error connecting in datasource: {self.datasource._name()} | {str(ex)}"
-            )
-            exit(1)
 
     async def parse_datasource(self, datasource: Any) -> BaseDataSource:
         if not datasource:
@@ -114,6 +137,24 @@ class Runner:
                 continue
             detectors_list.append(detector_obj)
         return detectors_list
+
+    async def parse_plugins(self, plugins_config: Any) -> PluginSystem:
+        plugin_system = PluginSystem()
+        await plugin_system.load()
+
+        if not plugins_config:
+            logger.info("No plugins configured")
+            return plugin_system
+
+        for plugin_id, config in plugins_config.items():
+            self.plugins_config.append({ 'id': plugin_id, 'config': config })
+
+        return plugin_system
+
+    async def start_detectors(self, auto_start: bool = True):
+        logger.info("scheduling detectors")
+        for detector in self.detectors:
+            await self.manager.run_detector(detector, auto_start)
 
     async def get_detectors(self):
         return self.detectors
