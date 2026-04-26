@@ -33,6 +33,16 @@ detectors:
 
 Only one datasource is configured per runner. See the [Datasources](datasource/index.md) section for available types and their configuration.
 
+## `plugins`
+
+An optional map of plugin configurations. The key is the plugin `id` and the value is the plugin-specific configuration object. See the [Plugins](plugin/index.md) section for available plugins and their options.
+
+```yaml
+plugins:
+    <plugin_id>:
+        option1: value1
+```
+
 ## `webhooks`
 
 A map of named webhook configurations. Each webhook has a `type` and type-specific fields. See the [Webhooks](webhooks/index.md) section for available types.

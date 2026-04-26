@@ -60,6 +60,9 @@ nav:
       - Slack: webhooks/slack.md
       - Telegram: webhooks/telegram.md
       - Matrix: webhooks/matrix.md
+    - Plugins:
+      - Overview: plugin/index.md
+      - Clickagentic: plugin/clickagentic.md
     - API: api.md
   - Blog:
     - blog/index.md
