@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.8.0] - 2026-04-26
+
+### 🚀 Features
+
+- Add plugin system
+
+- Clickagentic plugin, analyze alerts with LLM
+
+
+### 📝 Documentation
+
+- Add documentation for plugin system and clickagentic
+
 ## [1.7.0] - 2026-04-23
 
 ### 🪝 Webhook Changes
