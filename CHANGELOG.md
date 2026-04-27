@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.8.1] - 2026-04-27
+
+### 🐛 Bug Fixes
+
+- Fix field descriptions
+
 ## [1.8.0] - 2026-04-26
 
 ### 🚀 Features
