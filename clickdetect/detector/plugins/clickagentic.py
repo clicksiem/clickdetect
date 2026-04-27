@@ -19,12 +19,12 @@ class AlertSeverity(str, Enum):
     low = 'Low'
 
 class AlertAnalysisResponse(BaseModel):
-    summary: str
-    severity: str
-    confidence: int = Field(ge=0, le=100)
-    false_positive_score: int = Field(ge=0, le=100)
-    explanation: str
-    mitigations: List[str]
+    summary: str = Field(description="One-sentence objective summary of what the alert represents and why it was triggered")
+    severity: AlertSeverity = Field(description="Assessed severity level (Critical, High, Medium, or Low) based on the alert context and potential impact")
+    confidence: int = Field(ge=0, le=100, description="Confidence score (0–100) reflecting how certain the analysis is given the available alert data")
+    false_positive_score: int = Field(ge=0, le=100, description="Estimated probability (0–100) that this alert is a false positive, where 0 means definitely a true positive and 100 means definitely a false positive")
+    explanation: str = Field(description="In-depth explanation of the alert, including attack vector, affected assets, and why the rule was triggered")
+    mitigations: List[str] = Field(description="Ordered list of concrete mitigation steps to contain or remediate the threat described in this alert")
 
 class ProviderEnum(str, Enum):
     openai = 'openai'
