@@ -138,6 +138,11 @@ class ClickAgenticLLM(PluginBase):
                 logger.debug(f'skipping rule {rule.id} analyzis. rule_level: {rule.level} < from_level: {self.config.from_level}')
                 return None
 
+        if self.config.ids:
+            if rule.id in self.config.ids:
+                logger.debug(f'skipping rule id {rule.id}')
+                return None
+
         logger.info(
             f"[{detector.name}] Rule triggered: {rule.name} "
             f"(level={rule.level}, count={result.len})"
