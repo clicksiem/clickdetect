@@ -39,6 +39,8 @@ class ClickagenticConfig(BaseModel):
     provider: ProviderEnum
     model: str
     token: str
+    ids = Optional[List[str]]
+    from_level: Optional[int] = Field(ge=1) # only works if the level is >= than from_level
     base_url: Optional[str] = None
     false_positive: Optional[str] = None
     think: bool = Field(False)
@@ -130,6 +132,12 @@ class ClickAgenticLLM(PluginBase):
     async def _handle_rule_triggered(
         self, rule, detector, result, template_data
     ) -> dict | None:
+
+        if self.config.from_level:
+            if rule.level < self.config.from_level:
+                logger.debug(f'skipping rule {rule.id} analyzis. rule_level: {rule.level} < from_level: {self.config.from_level}')
+                return None
+
         logger.info(
             f"[{detector.name}] Rule triggered: {rule.name} "
             f"(level={rule.level}, count={result.len})"
