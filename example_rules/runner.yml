@@ -46,3 +46,8 @@ plugins:
     provider: 'openai' # provider: openai, anthropic, google, huggingface, ollama, openrouter, deepseek
     model: 'gpt-5.2' # get model from your provider
     token: 'xxx'
+    from_level: 10 # only run for alerts with alert level >= 10
+    ids:
+      - "id1"
+      - "id2"
+      - "id3"
