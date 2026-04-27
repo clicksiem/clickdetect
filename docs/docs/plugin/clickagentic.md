@@ -33,6 +33,8 @@ uv sync --group clickagentic
 | `base_url` | no | Custom base URL. Required for Ollama; optional for OpenRouter. |
 | `false_positive` | no | Free-text context describing known benign patterns. The agent uses this to calibrate the false-positive score. |
 | `think` | no | Enables extended thinking mode. Default: `false`. |
+| `from_level` | no | Filter rule based on rule level, If the rule level is >= from_level the clickagentic will process. Default: `None`. |
+| `ids` | no | Filter rule based on rule ID, pass an array of rule IDs to be skipped. Default: `None`. |
 
 ## Supported providers
 
