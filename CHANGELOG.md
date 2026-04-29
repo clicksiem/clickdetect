@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.10.0] - 2026-04-29
+
+### 🚀 Features
+
+- Add plugin listing
+
 ## [1.9.0] - 2026-04-27
 
 ### 🚀 Features
