@@ -1,5 +1,6 @@
-from asyncio import Lock
 import colorlog
+import logging
+from asyncio import Lock
 from importlib.metadata import version as get_version
 
 _lock = Lock()
@@ -22,6 +23,9 @@ def logConfig(verbose: bool = False):
         },
         force=True,
     )
+def disableLogging():
+    logging.disable(logging.ERROR)
+    logging.disable(logging.CRITICAL)
 
 
 async def is_running():

@@ -1,3 +1,4 @@
+from clickdetect.detector.manager import set_manager_instance, Manager
 import asyncio
 import uvicorn
 import argparse
@@ -9,17 +10,28 @@ from yaml import safe_load
 from .api.detector import router as detector_router
 from .api.rules import router as rules_router
 from .detector.runner import Runner
-from .detector.manager import get_manager_instance
 from .detector.config import version
 from .detector import config
 from .detector.datasource import datasources
 from .detector.webhooks import webhooks
+from .detector.plugin import PluginSystem
 
-config.logConfig()
 logger = getLogger(__name__)
 
+async def printPlugins():
+    config.disableLogging()
+    set_manager_instance(Manager())
+    psys = PluginSystem()
+    print('Loading plugins')
+    await psys.load()
+    for plugin in psys.plugins:
+        print(f'Id: {plugin.id}')
+        print(f'\tName: {plugin.name}')
+        print(f'\tVersion: {plugin.version}')
+        print()
+    exit(0)
 
-def print_webhooks():
+def printWebhooks():
     for w in webhooks:
         print(f"Webhook: {w._name()}")
         for param in w._params():
@@ -35,7 +47,7 @@ def print_webhooks():
     exit(0)
 
 
-def print_datasources():
+def printDatasources():
     for ds in datasources:
         print(f"Datasources: {ds._name()}")
         for param in ds._params():
@@ -94,6 +106,8 @@ async def loop_run(runner: Runner | None = None):
             await asyncio.sleep(1)
     except asyncio.CancelledError:
         logger.warning("received kill event")
+    except KeyboardInterrupt:
+        logger.warning("Ctrl + c, killing")
     finally:
         if runner:
             await runner.manager.shutdown()
@@ -163,19 +177,30 @@ async def main():
         action="store_true",
         help="List all datasources",
     )
+    parser.add_argument(
+        '--list-plugins',
+        default=False,
+        action='store_true',
+        help="List all plugins"
+    )
 
     args = parser.parse_args()
-    config.logConfig(verbose=args.verbose)
 
     if args.version:
         print(version)
         exit(0)
 
     if args.list_webhooks:
-        print_webhooks()
+        printWebhooks()
 
     if args.list_datasources:
-        print_datasources()
+        printDatasources()
+
+    if args.list_plugins:
+        await printPlugins()
+
+    config.logConfig(verbose=args.verbose)
+    logger = getLogger(__name__)
 
     if not f_exists(args.runner) and not args.stdin:
         logger.fatal(f"File {args.runner} does not exists")
@@ -187,12 +212,19 @@ async def main():
         tasks.append(load_api(args))
     if args.reload and runner:
         tasks.append(runner.start_watcher())
-    await asyncio.gather(*tasks)
+    try:
+        await asyncio.gather(*tasks)
+    except asyncio.CancelledError:
+        pass
+    except Exception as ex:
+        logger.error(f'Exception: {str(ex)}')
 
 
 def run():
-    asyncio.run(main())
-
+    try:
+        asyncio.run(main())
+    except KeyboardInterrupt:
+        pass
 
 if __name__ == "__main__":
     run()
