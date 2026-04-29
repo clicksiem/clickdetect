@@ -44,6 +44,7 @@ uv run clickdetect [OPTIONS]
 | `--no-start` | off | Do not start detectors on start |
 | `--list-webhooks` | off | List all available webhook types and exit |
 | `--list-datasources` | off | List all available datasource types and exit |
+| `--list-plugins` | off | List all plugins |
 
 
 # Docker / Podman

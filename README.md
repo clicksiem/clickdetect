@@ -86,6 +86,7 @@ podman run -v ./runner.yml:/app/runner.yml -p 8080 ghcr.io/clicksiem/clickdetect
 | `--no-start` | off | Do not start detectors on start |
 | `--list-webhooks` | off | List webhooks |
 | `--list-datasources` | off | List datasources |
+| `--list-plugins` | off | List all plugins |
 
 ## Runner Configuration
 
