@@ -10,7 +10,16 @@ Clickdetect is a generic alerting and detection engine that supports any data so
 
 Follow the doc: [https://clickdetect.souzo.me](https://clickdetect.souzo.me)
 
-## Supported sources
+## Core Concepts
+
+- Runner.yml: The file where you configure everything
+- Detector: Component that runs rules based on thresholds
+- Rule: File with structured format to define datasource analysis
+- Datasource: Where rule queries are executed, like a database or another SIEM engine
+- Webhooks: Where alerts are sent
+- Plugin: Script that can intercept Clickdetect actions like "on_rule_triggered"
+
+## Supported Integrations
 
 ### Datasources
 
@@ -18,7 +27,8 @@ Follow the doc: [https://clickdetect.souzo.me](https://clickdetect.souzo.me)
 - Loki
 - VictoriaLogs
 - PostgreSQL
-- Elastic/Opensearch
+- Elastic
+- Opensearch
 
 ### Webhooks
 
@@ -31,10 +41,13 @@ Follow the doc: [https://clickdetect.souzo.me](https://clickdetect.souzo.me)
 - Telegram
 - Discord
 
-## Starting guide
+### Plugins
 
-First of all, create your runner.yml file. (Follow doc for the creation)
-You will put detectors, webhooks and datasources in the configuration file.
+- clickagentic: LLM AI Agent that analyzes your alerts
+
+## Quick Start
+
+Start by creating a `runner.yml` file — see the full reference in the [documentation](https://clickdetect.souzo.me).
 
 ### uv
 
@@ -54,7 +67,7 @@ podman build -t clickdetect .
 podman run -v ./runner.yml:/app/runner.yml -p 8080 clickdetect --api -p 8080
 ```
 
-#### Github Packages
+#### GitHub Packages
 
 ```sh
 podman run -v ./runner.yml:/app/runner.yml -p 8080 ghcr.io/clicksiem/clickdetect:latest --api -p 8080
@@ -74,41 +87,73 @@ podman run -v ./runner.yml:/app/runner.yml -p 8080 ghcr.io/clicksiem/clickdetect
 | `--list-webhooks` | off | List webhooks |
 | `--list-datasources` | off | List datasources |
 
-## Roadmap
+## Runner Configuration
 
-### Webhooks
+```yaml
+datasource:
+    type: clickhouse
+    host: localhost
+    port: 8123
+    verify: false
+    username: default
+    password: default
+    database: siem
 
-- [x] Complete DFIR-IRIS webhook integration
-- [x] Add Slack webhook
-- [x] Add Discord webhook
-- [ ] Add PagerDuty webhook
-- [x] Add Telegram webhook
-- [ ] Add Opsgenie webhook
+webhooks:
+    generic_webhook:
+        type: generic
+        url: <webhook_url>
+        headers:
+          X-Type: test
 
-### Alert Management
+detectors:
+    5m_detector:
+        name: "5m interval"
+        for: "5m"
+        tenant: 'all' 
+        description: "detect rules with 5 min interval"
+        rules:
+            - "<your rule path>"
+        webhooks:
+            - generic_webhook
+        data:
+          var1: '<var>' # variables to send
+plugins:
+  clickagentic: # plugin id
+    provider: 'openai' # provider: openai, anthropic, google, huggingface, ollama, openrouter, deepseek
+    model: 'gpt-5.2' # get model from your provider
+    token: 'xxx'
+    from_level: 10 # only run for alerts with alert level >= 10
+    ids:
+      - "id1"
+```
 
-- [ ] Implement timeframe-based alert grouping (avoid duplicate alerts within a window)
-- [ ] Implement alert silencing (suppress alerts by rule/group/tenant for a duration)
-- [ ] Add API endpoints to manage silences (`POST /silence`, `DELETE /silence/{id}`)
+More example of runner in [example_rules](./example_rules/)
 
-### Rule Management
+## Rule Configuration
 
-- [x] Hot reload rules without restarting (`--reload` flag or file watcher) ✅
-- [ ] API endpoints to add/update/remove rules dynamically (depends on hot reload)
-- [ ] Sigma rule conversion support (`sigma: true` in rule definition)
+```yaml
+id: "00000000-0000-0000-0000-000000000000"
+name: "Base rule for help"
+level: 1
+size: ">0"
+active: false
+author: 
+    - Vinicius Morais <me@souzo.me>
+group: < group >
+tags: 
+    - <tags>
+data: # variables sent to rules by jinja
+    max_match_time: 5
+rule: |-
+    < rule >
+```
 
-### Datasources
+## Release
 
-- [ ] Add support for Splunk
-- [x] Add support for OpenSearch/Elasticsearch
-- [x] Add support for VictoriaLogs
+See the latest [releases and changelog](https://github.com/clicksiem/clickdetect/releases)
 
-### API & Observability
-
-- [ ] Implement an endpoint to create, edit and delete rules
-- [ ] Alert history endpoint to query past triggered rules
-
-## Contact-me
+## Contact
 
 * E-mail: me@souzo.me
 * Matrix: @souzo:matrix.org
