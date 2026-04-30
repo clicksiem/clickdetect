@@ -19,7 +19,7 @@ class DatabricksDataSource(BaseDataSource):
     async def connect(self):
         try:
             self._connection = sql.connect(
-                self.host, self.path, self.token, catalog=self.catalog
+                self.host, self.path, access_token=self.token, catalog=self.catalog
             )
         except Exception as ex:
             logger.error(
@@ -59,7 +59,7 @@ class DatabricksDataSource(BaseDataSource):
     def _params(cls) -> List[Parameters]:
         return [
             Parameters("host", str, True, "Databricks Hostname"),
-            Parameters("path", int, True, "Databricks Path http_path"),
+            Parameters("path", str, True, "Databricks Path http_path"),
             Parameters("token", str, True, "Databricks Token", is_sensive_field=True),
             Parameters("catalog", str, False, "Databricks Catalog"),
         ]
