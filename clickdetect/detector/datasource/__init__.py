@@ -6,6 +6,7 @@ from .elasticsearch import ElasticsearchDataSource
 from .postgresql import PostgreSQLDataSource
 from .victorialogs import VictoriaLogsDataSource
 from .opensearch import OpensearchDataSource
+from .databricks import DatabricksDataSource
 
 
 datasources: List[Type[BaseDataSource]] = [
@@ -14,5 +15,6 @@ datasources: List[Type[BaseDataSource]] = [
     ElasticsearchDataSource,
     OpensearchDataSource,
     PostgreSQLDataSource,
-    VictoriaLogsDataSource
+    VictoriaLogsDataSource,
+    DatabricksDataSource
 ]
