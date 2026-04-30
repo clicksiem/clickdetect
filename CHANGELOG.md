@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.11.0] - 2026-04-30
+
+### 🗃️ Datasource Changes
+
+- Add databricks datasource
+
 ## [1.10.0] - 2026-04-29
 
 ### 🚀 Features
