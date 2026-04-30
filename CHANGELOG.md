@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.11.2] - 2026-04-30
+
+### 🐛 Bug Fixes
+
+- Invalid variable type of "path"
+
 ## [1.11.1] - 2026-04-30
 
 ### 🐛 Bug Fixes
