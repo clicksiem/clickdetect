@@ -14,7 +14,7 @@ class DatabricksDataSource(BaseDataSource):
     token: str
     catalog: str | None = None
 
-    _connection: sql.Connection | None = None
+    _connection = None
 
     async def connect(self):
         try:
@@ -53,7 +53,7 @@ class DatabricksDataSource(BaseDataSource):
 
     @classmethod
     def _name(cls) -> str:
-        return "postgresql"
+        return "databricks"
 
     @classmethod
     def _params(cls) -> List[Parameters]:
