@@ -26,7 +26,9 @@ class AlertAnalysisResponse(BaseModel):
     false_positive_score: int = Field(ge=0, le=100, description="Percentage (0-100) estimating the likelihood that this alert is a false positive. A value of 0 indicates high confidence in a true positive, while 100 indicates high confidence that the alert is benign")
     risk_score: int = Field(ge=0, le=100, description="Percentage representing the overall risk level (0-100) considering potential impact and likelihood of threat activity. Higher values indicate more severe and actionable security risk")
     explanation: str = Field(description="Detailed explanation of the alert, including suspected attack vector, affected assets, triggering conditions, and reasoning behind the assessment")
-    mitigations: List[str] = Field(description="Ordered list of specific and actionable steps to investigate, contain, or remediate the threat described in this alert")
+    mitigations: Optional[List[str]] = Field(default=[], description="Ordered list of specific and actionable steps to investigate, contain, or remediate the threat described in this alert")
+    affected_entities: Optional[List[str]] = Field(default=None, description="List of affected entities such as users, hosts, IP addresses, or services involved in the alert" )
+    recommended_action: Optional[str] = Field(defaul=None, description="Single most important next action to take in response to this alert (e.g., isolate host, disable user, block IP)")
 
 class ProviderEnum(str, Enum):
     openai = 'openai'
