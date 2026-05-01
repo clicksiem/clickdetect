@@ -22,7 +22,21 @@ DEFAULT_TEMPLATE = """{
             { "name": "Tenant", "value": "{{ detector.tenant }}" }
         ],
         "markdown": true
-    }]
+    }{% if clickagentic is defined %},{
+        "activityTitle": "**Clickagentic Analysis**",
+        "facts": [
+            { "name": "Title", "value": {{ clickagentic.title | tojson }} },
+            { "name": "Summary", "value": {{ clickagentic.summary | tojson }} },
+            { "name": "Severity", "value": {{ (clickagentic.severity ~ " (confidence: " ~ clickagentic.confidence ~ "%)") | tojson }} },
+            { "name": "Risk Score", "value": "{{ clickagentic.risk_score }}%" },
+            { "name": "False Positive Score", "value": "{{ clickagentic.false_positive_score }}%" },
+            { "name": "Explanation", "value": {{ clickagentic.explanation | tojson }} },
+            { "name": "Mitigations", "value": {{ clickagentic.mitigations | join('\n') | tojson }} }{% if clickagentic.affected_entities %},
+            { "name": "Affected Entities", "value": {{ clickagentic.affected_entities | join(', ') | tojson }} }{% endif %}{% if clickagentic.recommended_action %},
+            { "name": "Recommended Action", "value": {{ clickagentic.recommended_action | tojson }} }{% endif %}
+        ],
+        "markdown": true
+    }{% endif %}]
 }"""
 
 

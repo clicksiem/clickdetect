@@ -19,13 +19,18 @@ Results: {{ data.value }}
 {% if clickagentic is defined %}
 --- clickagentic
 ## plugin - Clickagentic
+Title: {{ clickagentic.title }}
 Summary: {{ clickagentic.summary }}
 Severity: {{ clickagentic.severity }} (confidence: {{ clickagentic.confidence }}%)
+Risk Score: {{ clickagentic.risk_score }}%
 False Positive Score: {{ clickagentic.false_positive_score }}%
 Explanation: {{ clickagentic.explanation }}
-Mitigations:
+{% if clickagentic.affected_entities %}Affected Entities:
+{% for e in clickagentic.affected_entities %}- {{ e }}
+{% endfor %}{% endif %}Mitigations:
 {% for m in clickagentic.mitigations %}- {{ m }}
-{% endfor %}{% endif %}"""
+{% endfor %}{% if clickagentic.recommended_action %}Recommended Action: {{ clickagentic.recommended_action }}
+{% endif %}{% endif %}"""
 
 
 class BaseWebhook:
