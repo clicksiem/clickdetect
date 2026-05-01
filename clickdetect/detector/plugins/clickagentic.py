@@ -19,12 +19,14 @@ class AlertSeverity(str, Enum):
     low = 'Low'
 
 class AlertAnalysisResponse(BaseModel):
-    summary: str = Field(description="One-sentence objective summary of what the alert represents and why it was triggered")
-    severity: AlertSeverity = Field(description="Assessed severity level (Critical, High, Medium, or Low) based on the alert context and potential impact")
-    confidence: int = Field(ge=0, le=100, description="Confidence score (0–100) reflecting how certain the analysis is given the available alert data")
-    false_positive_score: int = Field(ge=0, le=100, description="Estimated probability (0–100) that this alert is a false positive, where 0 means definitely a true positive and 100 means definitely a false positive")
-    explanation: str = Field(description="In-depth explanation of the alert, including attack vector, affected assets, and why the rule was triggered")
-    mitigations: List[str] = Field(description="Ordered list of concrete mitigation steps to contain or remediate the threat described in this alert")
+    title: str = Field(description="Short, human-readable title summarizing the alert context and main issue detected")
+    summary: str = Field(description="One-sentence objective summary explaining what triggered the alert and its immediate significance")
+    severity: AlertSeverity = Field(description="Categorical severity level (Critical, High, Medium, Low) based on potential impact and urgency of the detected activity")
+    confidence: int = Field(ge=0, le=100, description="Percentage representing how confident the system is (0-100) in the correctness of this assessment based on available evidence. Lower values indicate high uncertainty or incomplete data, while higher values indicate strong and reliable supporting evidence")
+    false_positive_score: int = Field(ge=0, le=100, description="Percentage (0-100) estimating the likelihood that this alert is a false positive. A value of 0 indicates high confidence in a true positive, while 100 indicates high confidence that the alert is benign")
+    risk_score: int = Field(ge=0, le=100, description="Percentage representing the overall risk level (0-100) considering potential impact and likelihood of threat activity. Higher values indicate more severe and actionable security risk")
+    explanation: str = Field(description="Detailed explanation of the alert, including suspected attack vector, affected assets, triggering conditions, and reasoning behind the assessment")
+    mitigations: List[str] = Field(description="Ordered list of specific and actionable steps to investigate, contain, or remediate the threat described in this alert")
 
 class ProviderEnum(str, Enum):
     openai = 'openai'
