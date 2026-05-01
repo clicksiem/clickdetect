@@ -28,7 +28,7 @@ class AlertAnalysisResponse(BaseModel):
     explanation: str = Field(description="Detailed explanation of the alert, including suspected attack vector, affected assets, triggering conditions, and reasoning behind the assessment")
     mitigations: Optional[List[str]] = Field(default=[], description="Ordered list of specific and actionable steps to investigate, contain, or remediate the threat described in this alert")
     affected_entities: Optional[List[str]] = Field(default=None, description="List of affected entities such as users, hosts, IP addresses, or services involved in the alert" )
-    recommended_action: Optional[str] = Field(defaul=None, description="Single most important next action to take in response to this alert (e.g., isolate host, disable user, block IP)")
+    recommended_action: Optional[str] = Field(default=None, description="Single most important next action to take in response to this alert (e.g., isolate host, disable user, block IP)")
 
 class ProviderEnum(str, Enum):
     openai = 'openai'
@@ -43,8 +43,8 @@ class ClickagenticConfig(BaseModel):
     provider: ProviderEnum
     model: str
     token: str
-    ids = Optional[List[str]]
-    from_level: Optional[int] = Field(ge=1) # only works if the level is >= than from_level
+    ids: Optional[List[str]] = None
+    from_level: Optional[int] = Field(default=None, ge=1)
     base_url: Optional[str] = None
     false_positive: Optional[str] = None
     think: bool = Field(False)
@@ -174,6 +174,6 @@ class ClickAgenticLLM(PluginBase):
         return {
             "template_data": {
                 **template_data,
-                "clickagentic": analysis.model_dump(),
+                "clickagentic": analysis.model_dump(mode='json'),
             }
         }
