@@ -199,12 +199,13 @@ class Detector:
                 return None
             self._rules.append(rule)
 
-    async def setRuleActive(self, rule_id: str, active: bool):
+    async def setRuleActive(self, rule_id: str, active: bool) -> bool:
         rule = await self.get_rule_by_id(rule_id)
         if not rule:
-            return None
+            return False
         async with self._rule_lock:
             rule.active = active
+        return True
 
     async def load_rule_buffer(self, rule: Any) -> Rule | None:
         rule_data = Rule(
