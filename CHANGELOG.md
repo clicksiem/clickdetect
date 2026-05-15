@@ -1,5 +1,20 @@
 # Changelog
 
+## [1.12.1] - 2026-05-15
+
+### 🐛 Bug Fixes
+
+- Fix rule pause who was always returning None
+
+- Fix manager response of bool values and delete of the detector
+
+
+### 🔧 Other changes
+
+- Improve debug logs for api
+
+- Improve debug logs for detector api
+
 ## [1.12.0] - 2026-05-01
 
 ### 🚀 Features
