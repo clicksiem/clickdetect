@@ -38,11 +38,11 @@ class Manager:
         logger.debug(f"New job id: {job.id}")
         return job
 
-    async def stop_scheduler(self, job_id: str):
+    async def stop_scheduler(self, job_id: str) -> bool:
         logger.info(f"stopping scheduler: {job_id}")
         detector = self.job_detectors.get(job_id)
         if not detector:
-            return None
+            return False
         await detector.setActive(False)
         self.scheduler.pause_job(job_id)
         return True
@@ -55,12 +55,13 @@ class Manager:
         self.scheduler.remove_job(job_id)
         return True
 
-    async def resume_scheduler(self, job_id: str):
+    async def resume_scheduler(self, job_id: str) -> bool:
         logger.info(f"resuming scheduler: {job_id}")
         detector = self.job_detectors.get(job_id)
         if not detector:
-            return None
+            return False
         self.scheduler.resume_job(job_id)
+        del detector
         return True
 
     async def get_detectors(self) -> Dict[str, Detector]:
