@@ -1,0 +1,55 @@
+[changelog]
+header = "# Changelog\n\n"
+footer = "#### by souzo"
+trim = true
+body = """
+{%- macro remote_url() -%}
+  https://github.com/{{ remote.github.owner }}/{{ remote.github.repo }}
+{%- endmacro -%}
+
+## [{{ version | default(value="unreleased") | trim_start_matches(pat="v") }}]{% if timestamp %} - {{ timestamp | date(format="%Y-%m-%d") }}{% endif %}
+{% for group, commits in commits | group_by(attribute="group") %}
+    ### {{ group | striptags | trim | upper_first }}
+    {% for commit in commits | unique(attribute="message") %}
+        - {% if commit.scope %}*({{ commit.scope }})* {% endif %}\
+            {% if commit.breaking %}[**breaking**] {% endif %}\
+            {{ commit.message | split(pat="\n") | first | upper_first | trim }}\
+            {% if commit.remote.username %} by @{{ commit.remote.username }}{%- endif -%}
+    {% endfor %}
+{% endfor %}
+
+{%- if github -%}
+{% if github.contributors | filter(attribute="is_first_time", value=true) | length != 0 %}
+  ## New Contributors
+{% endif %}\
+{% for contributor in github.contributors | filter(attribute="is_first_time", value=true) %}
+  * @{{ contributor.username }} made their first contribution
+    {%- if contributor.pr_number %} in \
+      [#{{ contributor.pr_number }}]({{ self::remote_url() }}/pull/{{ contributor.pr_number }}) \
+    {%- endif %}
+{%- endfor -%}
+{%- endif %}
+
+"""
+
+[git]
+conventional_commits = true
+require_conventional = false
+commit_parsers = [
+    { message = "^chore\\(release\\)", skip = true },
+    { message = "^chore\\(deps\\)", skip = true },
+    { message = "^chore\\(docs\\)", skip = true },
+    { message = "^chore\\(ign\\)", skip = true },
+    { message = "^ci", skip = true },
+    { message = "^style", skip = true },
+    { message = ".*\\(webhook\\)", group = "<!-- 2 --> 🪝 Webhook Changes"},
+    { message = ".*\\(datasource\\)", group = "<!-- 3 --> 🗃️ Datasource Changes"},
+    { message = ".*\\(api\\)", group = "<!-- 4 --> 🔌 API"},
+    { message = "^feat", group = "<!-- 0 --> 🚀 Features"},
+    { message = "^fix", group = "<!-- 1 --> 🐛 Bug Fixes"},
+    { message = "^docs", group = "<!-- 6 --> 📝 Documentation"},
+    { message = "^perf", group = "<!-- 5 --> ⚡ Performance"},
+    { message = "^refactor", group = "<!-- 7 --> ♻️ Refactor"},
+    { message = '.*', group="<!-- 8 -->🔧 Other changes", default_scope = "other"},
+    { body = "$^", skip = true }
+]

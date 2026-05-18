@@ -25,8 +25,8 @@ echo "Next version: $NEXT_VERSION"
 sed -i "s/^version = \"[^\"]*\"/version = \"$VERSION_NO_V\"/" pyproject.toml
 
 # Generate full changelog
-uv run git-cliff --unreleased --bump --prepend CHANGELOG.md
-uv run git-cliff --unreleased --bump  > NEXT_RELEASE.md
+uv run git-cliff -c cliff.toml --unreleased --bump --prepend CHANGELOG.md
+uv run git-cliff -c cliff.toml --unreleased --bump  > NEXT_RELEASE.md
 
 BLOG_POST="docs/docs/blog/posts/changelog-$NEXT_VERSION.md"
 
