@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.12.2] - 2026-05-18
+
+### 🔧 Other changes
+
+- *(other)* Better release notes by @souzomain
+
 ## [1.12.1] - 2026-05-15
 
 ### 🐛 Bug Fixes
