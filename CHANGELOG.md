@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.13.0] - 2026-05-21
+
+### 🗃️ Datasource Changes
+
+- *(datasource)* Add opensearch PPL datasource by @souzomain
+
+### 🔧 Other changes
+
+- *(other)* Add `uv.lock` to the project by @souzomain
+
 ## [1.12.2] - 2026-05-18
 
 ### 🔧 Other changes
