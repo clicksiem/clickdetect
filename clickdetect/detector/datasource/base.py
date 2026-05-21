@@ -62,3 +62,5 @@ class BaseDataSource:
             result[param.name] = getattr(self, attr, param.default)
         return result
 
+    def parse_sigma(self, rule: Rule) -> str:
+        return rule.rule

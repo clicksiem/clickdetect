@@ -86,13 +86,11 @@ class Detector:
                 "data": utils.JsonDict(value.to_dict()),
                 "detector": utils.JsonDict(self.to_dict()),
                 "datasource": utils.JsonDict(self.datasource.to_dict()),
-                "time": utils.JsonDict(
-                    {"startime": startime, "endtime": endtime}
-                ),
+                "time": utils.JsonDict({"startime": startime, "endtime": endtime}),
             }
 
             if self._hooks:
-                logger.debug('emiting on_rule_triggered to hooks')
+                logger.debug("emiting on_rule_triggered to hooks")
                 hook_result = await self._hooks.emit(
                     EventEnum.on_rule_triggered,
                     rule=rule,
@@ -100,8 +98,8 @@ class Detector:
                     result=value,
                     template_data=template_data,
                 )
-                logger.debug(f'webhook result {hook_result}')
-                template_data = hook_result.get('template_data', template_data)
+                logger.debug(f"webhook result {hook_result}")
+                template_data = hook_result.get("template_data", template_data)
 
             for webhook in self._webhooks:
                 try:
@@ -221,6 +219,7 @@ class Detector:
             data=rule.get("data", {}),
             description=rule.get("description", ""),
             path="",
+            sigma=rule.get("sigma", False),
         )
 
         if (
@@ -243,6 +242,8 @@ class Detector:
             if not rule:
                 logger.debug(f"Rule not found: {rule_path}")
                 return
+            if self.datasource:
+                rule.rule = self.datasource.parse_sigma(rule)
             await self.add_rule(rule)
 
     async def reload_rule_by_path(self, path: str):
@@ -287,6 +288,12 @@ class Detector:
                     if r := await self.load_rule_path(rule_path):
                         await self.add_rule(r)
         return self._rules
+
+    async def load_sigma(self):
+        if not self.datasource:
+            return  # not load until detector is full loaded
+        for r in self._rules:
+            r.rule = self.datasource.parse_sigma(r)
 
     async def setActive(self, active: bool):
         self.active = active

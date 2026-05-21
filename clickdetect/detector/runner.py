@@ -8,11 +8,13 @@ from .plugin import PluginSystem
 from .webhooks.generic import GenericWebhook
 from .webhooks import webhooks as w_webhooks
 from .watcher import RuleWatcher
+
 logger = getLogger(__name__)
 
 
 class Runner:
     plugins_config: List[Dict[str, Any]]
+
     def __init__(self, data: Any) -> None:
         self.data = data
         self.plugins_config = []
@@ -34,11 +36,10 @@ class Runner:
         await self.load_plugins()
         await self.load_datasource()
 
-
     async def load_plugins(self):
         for plugin in self.plugins_config:
-            plugin_id = plugin.get('id', None)
-            config = plugin.get('config', None)
+            plugin_id = plugin.get("id", None)
+            config = plugin.get("config", None)
             if not plugin_id:
                 continue
             await self.plugin_system.load_plugin_id(plugin_id, config)
@@ -53,10 +54,16 @@ class Runner:
             )
             exit(1)
 
+    async def load_sigma_rules(self):
+        for detector in self.detectors:
+            for rule in detector._rules:
+                rule.rule = detector.datasource.parse_sigma(rule)
+
     async def load_detectors(self):
         logger.info("loading detectors")
         for detector in self.detectors:
             detector.datasource = self.datasource
+            await self.load_sigma_rules()
             detector._hooks = self.plugin_system.hooks
             if self.webhooks:
                 for webhook in self.webhooks:
@@ -147,7 +154,7 @@ class Runner:
             return plugin_system
 
         for plugin_id, config in plugins_config.items():
-            self.plugins_config.append({ 'id': plugin_id, 'config': config })
+            self.plugins_config.append({"id": plugin_id, "config": config})
 
         return plugin_system
 

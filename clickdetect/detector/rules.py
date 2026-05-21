@@ -21,6 +21,7 @@ class Rule:
     description: str = field(default="")
     detector: Any = field(default=None)
     path: str = field(default="")
+    sigma: bool = field(default=False)
 
     operators: ClassVar[Dict[str, Callable[[int, int], bool]]] = {
         ">=": lambda x, y: x >= y,
@@ -60,4 +61,5 @@ class Rule:
             "description": self.description,
             "detector": self.detector,
             "path": self.path,
+            "sigma": self.sigma
         }
