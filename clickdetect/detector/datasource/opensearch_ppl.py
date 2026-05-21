@@ -2,8 +2,12 @@ from typing import Any, Dict, List
 from logging import getLogger
 import aiohttp
 
+from clickdetect.detector.rules import Rule
+
 from ..utils import Parameters
 from .base import BaseDataSource, DataSourceQueryResult
+from sigma.backends.opensearch.opensearch_ppl import OpenSearchPPLBackend
+from sigma.collection import SigmaCollection
 
 logger = getLogger(__name__)
 
@@ -72,6 +76,13 @@ class OpensearchPPLDataSource(BaseDataSource):
         columns = [col.get("name") for col in resp.get("schema", [])]
         result = [dict(zip(columns, rows)) for rows in resp.get("datarows", [])]
         return DataSourceQueryResult(size, result, self._name())
+
+    def parse_sigma(self, rule: Rule) -> str:
+        if not rule.sigma:
+            return rule.rule
+        backend = OpenSearchPPLBackend()
+        rule_data = SigmaCollection.from_yaml(rule.rule)
+        return backend.convert(rule_data)[0]
 
     @classmethod
     def _name(cls) -> str:
