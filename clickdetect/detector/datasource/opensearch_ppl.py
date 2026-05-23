@@ -1,9 +1,7 @@
+import aiohttp
 from typing import Any, Dict, List
 from logging import getLogger
-import aiohttp
-
 from clickdetect.detector.rules import Rule
-
 from ..utils import Parameters
 from .base import BaseDataSource, DataSourceQueryResult
 from sigma.backends.opensearch.opensearch_ppl import OpenSearchPPLBackend

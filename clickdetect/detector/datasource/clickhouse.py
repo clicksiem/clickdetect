@@ -1,13 +1,14 @@
+from clickdetect.detector.rules import Rule
 from ..utils import Parameters
 from typing import List
 from clickhouse_connect import get_async_client
 from clickhouse_connect.driver.asyncclient import AsyncClient
 from logging import getLogger
-
 from .base import BaseDataSource, DataSourceQueryResult
+from sigma.backends.clickhouse.clickhouse import ClickhouseBackend
+from sigma.collection import SigmaCollection
 
 logger = getLogger(__name__)
-
 
 class ClickhouseDataSource(BaseDataSource):
     database: str
@@ -46,6 +47,13 @@ class ClickhouseDataSource(BaseDataSource):
             logger.error(f"Query failed, resetting client | {ex}")
             self.client = None
             return None
+
+    def parse_sigma(self, rule: Rule) -> str:
+        if not rule.sigma:
+            return rule.rule
+        backend = ClickhouseBackend()
+        rule_sigma = SigmaCollection.from_yaml(rule.rule)
+        return backend.convert(rule_sigma)[0]
 
     @classmethod
     def _name(cls) -> str:

@@ -1,11 +1,9 @@
-from typing import Any, Dict, List
-from logging import getLogger
 import json
 import aiohttp
-
+from typing import Any, Dict, List
+from logging import getLogger
 from ..utils import Parameters
 from .base import BaseDataSource, DataSourceQueryResult
-
 logger = getLogger(__name__)
 
 
