@@ -87,7 +87,7 @@ async def load_runner(args: Any) -> Runner | None:
         logger.fatal("Invalid runner. The loaded runner is not a valid yaml")
         exit(1)
 
-    runner = await Runner(data).init()
+    runner = await Runner(data, args.sigma).init()
     if not runner:
         logger.warning("Runner not loaded")
         return None
@@ -183,6 +183,12 @@ async def main():
         action='store_true',
         help="List all plugins"
     )
+    parser.add_argument(
+        '--sigma',
+        default=False,
+        action='store_true',
+        help="All rules discovered will be parsed as sigma"
+    )
 
     args = parser.parse_args()
 
@@ -198,9 +204,12 @@ async def main():
 
     if args.list_plugins:
         await printPlugins()
-
+    
     config.logConfig(verbose=args.verbose)
     logger = getLogger(__name__)
+
+    if args.sigma:
+        logger.info('Running all_sigma mode. all rules discovered needs to be sigma')
 
     if not f_exists(args.runner) and not args.stdin:
         logger.fatal(f"File {args.runner} does not exists")
