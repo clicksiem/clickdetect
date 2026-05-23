@@ -63,4 +63,9 @@ class BaseDataSource:
         return result
 
     def parse_sigma(self, rule: Rule) -> str:
+        if rule.sigma:
+            return self.parse_sigma_rule(rule.rule)
         return rule.rule
+
+    def parse_sigma_rule(self, data: str) -> str:
+        raise NotImplementedError()

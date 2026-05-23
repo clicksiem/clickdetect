@@ -15,9 +15,10 @@ logger = getLogger(__name__)
 class Runner:
     plugins_config: List[Dict[str, Any]]
 
-    def __init__(self, data: Any) -> None:
+    def __init__(self, data: Any, all_is_sigma: bool = False) -> None:
         self.data = data
         self.plugins_config = []
+        self.all_is_sigma = all_is_sigma
 
     async def init(self) -> Self:
         await self.load_runner()
@@ -54,16 +55,14 @@ class Runner:
             )
             exit(1)
 
-    async def load_sigma_rules(self):
-        for detector in self.detectors:
-            for rule in detector._rules:
-                rule.rule = detector.datasource.parse_sigma(rule)
-
     async def load_detectors(self):
         logger.info("loading detectors")
         for detector in self.detectors:
             detector.datasource = self.datasource
-            await self.load_sigma_rules()
+            if not self.all_is_sigma:
+                await detector.load_sigma()
+            else:
+                await detector.load_rules_directory()
             detector._hooks = self.plugin_system.hooks
             if self.webhooks:
                 for webhook in self.webhooks:
@@ -138,10 +137,12 @@ class Runner:
                 data=detector.get("data"),
                 tenant=detector.get("tenant", "default"),
                 active=detector.get("active", True),
+                all_is_sigma=detector.get('sigma', False)
             )
-            await detector_obj.load_rules_directory()
-            if not detector_obj._rules:
-                continue
+            if self.all_is_sigma:
+                await detector_obj.setAllIsSigma(True)
+            if not detector_obj.all_is_sigma:
+                await detector_obj.load_rules_directory()
             detectors_list.append(detector_obj)
         return detectors_list
 

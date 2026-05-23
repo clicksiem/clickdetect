@@ -81,12 +81,13 @@ class OpensearchDataSource(BaseDataSource):
         rows = [{"_id": h["_id"], "_index": h["_index"], **h["_source"]} for h in hits]
         return DataSourceQueryResult(len(rows), rows, self._name())
 
-    def parse_sigma(self, rule: Rule) -> str:
-        if not rule.sigma:
-            return rule.rule
+    def parse_sigma_rule(self, data: str) -> str:
         backend = OpensearchLuceneBackend(None, index_names=[self.index])
-        rule_data = SigmaCollection.from_yaml(rule.rule)
-        return backend.convert(rule_data, output_format="dsl_lucene")[0]
+        rule_data = SigmaCollection.from_yaml(data)
+        result = backend.convert(rule_data, output_format="dsl_lucene")
+        if not result:
+            raise ValueError("Sigma rule produced no output for opensearch backend")
+        return result[0]
 
     @classmethod
     def _name(cls) -> str:

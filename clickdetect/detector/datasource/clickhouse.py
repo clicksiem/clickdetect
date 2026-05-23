@@ -10,6 +10,7 @@ from sigma.collection import SigmaCollection
 
 logger = getLogger(__name__)
 
+
 class ClickhouseDataSource(BaseDataSource):
     database: str
     host: str
@@ -42,18 +43,21 @@ class ClickhouseDataSource(BaseDataSource):
             return None
         try:
             result = await self.client.query(data)
-            return DataSourceQueryResult(result.row_count, list(result.named_results()), self._name())
+            return DataSourceQueryResult(
+                result.row_count, list(result.named_results()), self._name()
+            )
         except Exception as ex:
             logger.error(f"Query failed, resetting client | {ex}")
             self.client = None
             return None
 
-    def parse_sigma(self, rule: Rule) -> str:
-        if not rule.sigma:
-            return rule.rule
+    def parse_sigma_rule(self, data: str) -> str:
         backend = ClickhouseBackend()
-        rule_sigma = SigmaCollection.from_yaml(rule.rule)
-        return backend.convert(rule_sigma)[0]
+        rule_sigma = SigmaCollection.from_yaml(data)
+        result = backend.convert(rule_sigma)
+        if not result:
+            raise ValueError("Sigma rule produced no output for clickhouse backend")
+        return result[0]
 
     @classmethod
     def _name(cls) -> str:
@@ -62,10 +66,24 @@ class ClickhouseDataSource(BaseDataSource):
     @classmethod
     def _params(cls) -> List[Parameters]:
         return [
-            Parameters('database', str, False, 'Clickhouse database', 'default'),
-            Parameters('host', str, True, 'Clickhouse host', is_sensive_field=True),
-            Parameters('port', int, False, 'Clickhouse port', 8123),
-            Parameters('username', str, False, 'Clickhouse username', 'default', is_sensive_field=True),
-            Parameters('password', str, False, 'Clickhouse password', 'default', is_sensive_field=True),
-            Parameters('verify', bool, False, 'Verify SSL connection', False),
+            Parameters("database", str, False, "Clickhouse database", "default"),
+            Parameters("host", str, True, "Clickhouse host", is_sensive_field=True),
+            Parameters("port", int, False, "Clickhouse port", 8123),
+            Parameters(
+                "username",
+                str,
+                False,
+                "Clickhouse username",
+                "default",
+                is_sensive_field=True,
+            ),
+            Parameters(
+                "password",
+                str,
+                False,
+                "Clickhouse password",
+                "default",
+                is_sensive_field=True,
+            ),
+            Parameters("verify", bool, False, "Verify SSL connection", False),
         ]

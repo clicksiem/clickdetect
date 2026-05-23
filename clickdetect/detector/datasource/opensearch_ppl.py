@@ -82,6 +82,14 @@ class OpensearchPPLDataSource(BaseDataSource):
         rule_data = SigmaCollection.from_yaml(rule.rule)
         return backend.convert(rule_data)[0]
 
+    def parse_sigma_rule(self, data: str) -> str:
+        backend = OpenSearchPPLBackend()
+        rule_data = SigmaCollection.from_yaml(data)
+        result = backend.convert(rule_data)
+        if not result:
+            raise ValueError("Sigma rule produced no output for opensearch-ppl backend")
+        return result[0]
+
     @classmethod
     def _name(cls) -> str:
         return "opensearch-ppl"
