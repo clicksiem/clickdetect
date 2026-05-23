@@ -38,6 +38,7 @@ require_conventional = false
 commit_parsers = [
     { message = "^chore\\(release\\)", skip = true },
     { message = "^chore\\(deps\\)", skip = true },
+    { message = "^chore\\(deps-dev\\)", skip = true },
     { message = "^chore\\(docs\\)", skip = true },
     { message = "^chore\\(ign\\)", skip = true },
     { message = "^ci", skip = true },
