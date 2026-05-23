@@ -18,6 +18,8 @@ dependencies = [
     "redis>=7.4.0",
     "watchfiles>=1.1.1",
     "pysigma-backend-clickhouse>=0.1.1",
+    "pytest>=9.0.3",
+    "pytest-asyncio>=1.3.0",
 ]
 authors = [
     { name = "Vinicius Morais", email = "me@souzo.me" }
@@ -48,3 +50,6 @@ clickdetect = "clickdetect:run"
 
 [tool.uv]
 package = true
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
