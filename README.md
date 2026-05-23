@@ -1,4 +1,4 @@
-Made in :brazil: | ![GitHub Repo stars](https://img.shields.io/github/stars/clicksiem/clickdetect) | ![GitHub commit activity](https://img.shields.io/github/commit-activity/m/clicksiem/clickdetect)
+Made in :brazil: | ![GitHub Repo stars](https://img.shields.io/github/stars/clicksiem/clickdetect)
 
 ---
 
