@@ -610,6 +610,7 @@ dependencies = [
     { name = "fastapi", extra = ["standard"] },
     { name = "jinja2" },
     { name = "pysigma-backend-clickhouse" },
+    { name = "pysigma-backend-loki" },
     { name = "pysigma-backend-opensearch" },
     { name = "pytest" },
     { name = "pytest-asyncio" },
@@ -642,6 +643,7 @@ requires-dist = [
     { name = "fastapi", extras = ["standard"], specifier = ">=0.127.1" },
     { name = "jinja2", specifier = ">=3.1.6" },
     { name = "pysigma-backend-clickhouse", specifier = ">=0.1.1" },
+    { name = "pysigma-backend-loki", specifier = ">=0.13.0" },
     { name = "pysigma-backend-opensearch", specifier = ">=2.0.3" },
     { name = "pytest", specifier = ">=9.0.3" },
     { name = "pytest-asyncio", specifier = ">=1.3.0" },
@@ -3223,6 +3225,18 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/f5/85/54a2c6c2b041bc187e256e65e6c2773d07def321cf0c1a4a57d60b814a02/pysigma_backend_elasticsearch-2.0.3.tar.gz", hash = "sha256:03c35fc78929557289fc611c1a3ce29ad46045ef4a8aaa216599e67e775ae21c", size = 34094, upload-time = "2026-05-20T08:10:39.721Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/69/e1/cd75ae37b85fd16fbf783a7eaa469102a844aff8c7f8bb874158c7d5ae38/pysigma_backend_elasticsearch-2.0.3-py3-none-any.whl", hash = "sha256:131ae1532260c9604cd96616c96ad4b4c642e5e37262ac030f11dad069a30339", size = 41166, upload-time = "2026-05-20T08:10:38.313Z" },
+]
+
+[[package]]
+name = "pysigma-backend-loki"
+version = "0.13.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "pysigma" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/09/6c/4417a672e7f7d4300c779290d4512b04a126f5a8a7ab7a789747c6f79dc0/pysigma_backend_loki-0.13.0.tar.gz", hash = "sha256:0645103439b29af523fccd73678a8530ca0684d43bad5ae78895aef64cd3c8d0", size = 24368, upload-time = "2025-11-25T15:24:01.378Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/69/e7/d71a262acb5dc38c401b161641c348b75389d25a8809b851a15dcc42963f/pysigma_backend_loki-0.13.0-py3-none-any.whl", hash = "sha256:96eed1443d4f3cf8b4457af58f82c13e26facf21b60d6f3c985fffd3bceecc2e", size = 24511, upload-time = "2025-11-25T15:24:00.174Z" },
 ]
 
 [[package]]
