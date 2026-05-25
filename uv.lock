@@ -2316,15 +2316,15 @@ wheels = [
 
 [[package]]
 name = "pysigma-backend-clickhouse"
-version = "0.1.0"
+version = "1.0.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "pysigma" },
     { name = "pyyaml" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/ff/5f/917dda933849ef8585b536d3f42c0b701b229183f1dcb1a7c3ad7247754f/pysigma_backend_clickhouse-0.1.0.tar.gz", hash = "sha256:1875e6dc8d0658693e696f6a541b9889d1a769bc89c5aeaecdb1d10121824784", size = 31991, upload-time = "2026-05-21T03:41:09.136Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/ff/4d/af86cf80bf7f70a7df3ba4573447e5d8585bbcef803aa8b7a4ffca99cd0e/pysigma_backend_clickhouse-1.0.0.tar.gz", hash = "sha256:2cd3309fcceeccb55d20e26e2a6705740cbda532aa72779e206e39435855196d", size = 40851, upload-time = "2026-05-23T02:33:38.913Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/a0/07/a0c4bf347ccf07503fb02348300044f26f1ce04750e1427867dff88644d3/pysigma_backend_clickhouse-0.1.0-py3-none-any.whl", hash = "sha256:c8e63c631cfd3038c9acf18a161fe39bff1605cc9b75378a9dbc84bd5d119e69", size = 6937, upload-time = "2026-05-21T03:41:08.03Z" },
+    { url = "https://files.pythonhosted.org/packages/69/2e/8a61e1a518d015763a086bb7148adbc617e8bb757e34eb7ee36d409f4721/pysigma_backend_clickhouse-1.0.0-py3-none-any.whl", hash = "sha256:de7670fea0e253a1b38d7ba3ce3526815fdbbf40a6eb467dff93a6eeaf4326b0", size = 7919, upload-time = "2026-05-23T02:33:39.734Z" },
 ]
 
 [[package]]
