@@ -57,7 +57,7 @@ class OpensearchPPLDataSource(BaseDataSource):
             return None
         try:
             resp = await self._session.post(
-                f"{self._base_url()}/_plugins/_sql", json={"query": data}
+                f"{self._base_url()}/_plugins/_ppl", json={"query": data}
             )
             resp.raise_for_status()
             resp_data = await resp.json()
