@@ -59,9 +59,7 @@ class Runner:
         logger.info("loading detectors")
         for detector in self.detectors:
             detector.datasource = self.datasource
-            if not self.all_is_sigma:
-                await detector.load_sigma()
-            else:
+            if detector.all_is_sigma:
                 await detector.load_rules_directory()
             detector._hooks = self.plugin_system.hooks
             if self.webhooks:
