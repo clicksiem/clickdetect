@@ -40,6 +40,7 @@ rule: |-
 | `tags` | no | List of tags for classification |
 | `description` | no | Description of what the rule detects |
 | `data` | no | Custom key/value data, available in the rule template |
+| `sigma` | no | Parse the `rule` field as a Sigma rule (default: `false`) |
 
 ## `size` — condition format
 

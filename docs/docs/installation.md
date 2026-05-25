@@ -45,6 +45,8 @@ uv run clickdetect [OPTIONS]
 | `--list-webhooks` | off | List all available webhook types and exit |
 | `--list-datasources` | off | List all available datasource types and exit |
 | `--list-plugins` | off | List all plugins |
+| `--sigma` | off | Treat all rules as Sigma rule |
+| `--version` | off | Print version and exit |
 
 
 # Docker / Podman
