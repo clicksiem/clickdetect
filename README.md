@@ -29,6 +29,8 @@ Follow the doc: [https://clickdetect.souzo.me](https://clickdetect.souzo.me)
 - PostgreSQL
 - Elastic
 - Opensearch
+- Opensearch PPL
+- Databricks
 
 ### Webhooks
 
@@ -87,6 +89,8 @@ podman run -v ./runner.yml:/app/runner.yml -p 8080 ghcr.io/clicksiem/clickdetect
 | `--list-webhooks` | off | List webhooks |
 | `--list-datasources` | off | List datasources |
 | `--list-plugins` | off | List all plugins |
+| `--sigma` | off | Treat all rules as Sigma rule |
+| `--version` | off | Print version and exit |
 
 ## Runner Configuration
 
@@ -115,6 +119,7 @@ detectors:
         description: "detect rules with 5 min interval"
         rules:
             - "<your rule path>"
+        sigma: true # threat all rules for this detector as sigma rule
         webhooks:
             - generic_webhook
         data:
@@ -156,6 +161,8 @@ See the latest [releases and changelog](https://github.com/clicksiem/clickdetect
 
 ## Contact
 
-* E-mail: me@souzo.me
-* Matrix: @souzo:matrix.org
-* Linkedin: [https://www.linkedin.com/in/vinicius-m-a76ba51b5/](https://www.linkedin.com/in/vinicius-m-a76ba51b5/)
+* *E-mail*: me@souzo.me
+* *Matrix*: @souzo:matrix.org
+* *Linkedin*: [https://www.linkedin.com/in/vinicius-m-a76ba51b5/](https://www.linkedin.com/in/vinicius-m-a76ba51b5/)
+* *Twitter/X*: [https://x.com/souzomain](https://x.com/souzomain)
+* *Reddit*: [https://www.reddit.com/user/_souzo/](https://www.reddit.com/user/_souzo/)

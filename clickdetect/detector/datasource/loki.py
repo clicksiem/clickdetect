@@ -1,9 +1,10 @@
+import aiohttp
 from typing import Any, List
 from logging import getLogger
 from .base import BaseDataSource, DataSourceQueryResult
 from ..utils import Parameters
-import aiohttp
-
+from sigma.collection import SigmaCollection
+from sigma.backends.loki.loki import LogQLBackend
 logger = getLogger(__name__)
 
 
@@ -85,6 +86,14 @@ class LokiDataSource(BaseDataSource):
             for ts, line in stream.get("values", []):
                 rows.append({"timestamp": ts, "line": line, **labels})
         return DataSourceQueryResult(len(rows), rows, self._name())
+
+    def parse_sigma_rule(self, data: str) -> str:
+        backend = LogQLBackend(None)
+        rule_data = SigmaCollection.from_yaml(data)
+        result = backend.convert(rule_data, output_format="default")
+        if not result:
+            raise ValueError("Sigma rule produced no output for opensearch backend")
+        return result[0]
 
     @classmethod
     def _name(cls) -> str:

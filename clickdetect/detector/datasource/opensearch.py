@@ -3,8 +3,13 @@ from logging import getLogger
 import json
 import aiohttp
 
+from clickdetect.detector.rules import Rule
+
 from ..utils import Parameters
 from .base import BaseDataSource, DataSourceQueryResult
+
+from sigma.backends.opensearch.opensearch import OpensearchLuceneBackend
+from sigma.collection import SigmaCollection
 
 logger = getLogger(__name__)
 
@@ -65,6 +70,7 @@ class OpensearchDataSource(BaseDataSource):
             return self._parse_result(jdata)
         except Exception as ex:
             logger.error(f"Query failed, resetting session | {ex}")
+            logger.debug(f"Query data: {data}")
             if self._session:
                 await self._session.close()
             self._session = None
@@ -74,6 +80,14 @@ class OpensearchDataSource(BaseDataSource):
         hits = payload.get("hits", {}).get("hits", [])
         rows = [{"_id": h["_id"], "_index": h["_index"], **h["_source"]} for h in hits]
         return DataSourceQueryResult(len(rows), rows, self._name())
+
+    def parse_sigma_rule(self, data: str) -> str:
+        backend = OpensearchLuceneBackend(None, index_names=[self.index])
+        rule_data = SigmaCollection.from_yaml(data)
+        result = backend.convert(rule_data, output_format="dsl_lucene")
+        if not result:
+            raise ValueError("Sigma rule produced no output for opensearch backend")
+        return result[0]
 
     @classmethod
     def _name(cls) -> str:

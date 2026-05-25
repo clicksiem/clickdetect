@@ -4,6 +4,7 @@ from typing import Any, List
 from glob import glob
 from pathlib import Path
 from json import dumps
+from uuid import uuid4
 from yaml import safe_load
 from logging import getLogger
 from datetime import datetime, timedelta
@@ -29,6 +30,7 @@ class Detector:
     data: Any = field(default_factory=dict)
     tenant: str = field(default="default")
     active: bool = field(default=True)
+    all_is_sigma: bool = field(default=False)
 
     datasource: BaseDataSource = field(init=False)
     _rules: List[Rule] = field(default_factory=list)
@@ -86,13 +88,11 @@ class Detector:
                 "data": utils.JsonDict(value.to_dict()),
                 "detector": utils.JsonDict(self.to_dict()),
                 "datasource": utils.JsonDict(self.datasource.to_dict()),
-                "time": utils.JsonDict(
-                    {"startime": startime, "endtime": endtime}
-                ),
+                "time": utils.JsonDict({"startime": startime, "endtime": endtime}),
             }
 
             if self._hooks:
-                logger.debug('emiting on_rule_triggered to hooks')
+                logger.debug("emiting on_rule_triggered to hooks")
                 hook_result = await self._hooks.emit(
                     EventEnum.on_rule_triggered,
                     rule=rule,
@@ -100,8 +100,8 @@ class Detector:
                     result=value,
                     template_data=template_data,
                 )
-                logger.debug(f'webhook result {hook_result}')
-                template_data = hook_result.get('template_data', template_data)
+                logger.debug(f"webhook result {hook_result}")
+                template_data = hook_result.get("template_data", template_data)
 
             for webhook in self._webhooks:
                 try:
@@ -207,21 +207,43 @@ class Detector:
             rule.active = active
         return True
 
-    async def load_rule_buffer(self, rule: Any) -> Rule | None:
-        rule_data = Rule(
-            id=rule.get("id"),
-            name=rule.get("name"),
-            level=rule.get("level"),
-            size=rule.get("size", ">0"),  # default >0
-            active=rule.get("active", True),  # default is True
-            rule=rule.get("rule"),
-            author=rule.get("author", []),
-            group=rule.get("group", ""),
-            tags=rule.get("tags", []),
-            data=rule.get("data", {}),
-            description=rule.get("description", ""),
-            path="",
-        )
+    async def load_rule_buffer(self, rule: Any, raw: str) -> Rule | None:
+        rule_data: Rule
+        if self.all_is_sigma:
+            if not hasattr(self, "datasource") or not self.datasource:
+                logger.error("Datasource not initialized, cannot parse sigma rule")
+                return None
+            rule_data = Rule(
+                id=rule.get("id"),
+                name=rule.get("title"),
+                level=rule.get("level"),
+                size=">0",
+                active=True,
+                rule=self.datasource.parse_sigma_rule(raw),
+                author=[rule.get("author", "")],
+                group="",
+                tags=rule.get("tags", []),
+                data={},
+                description=rule.get("description", ""),
+                path="",
+                sigma=False,
+            )
+        else:
+            rule_data = Rule(
+                id=rule.get("id"),
+                name=rule.get("name"),
+                level=rule.get("level"),
+                size=rule.get("size", ">0"),  # default >0
+                active=rule.get("active", True),  # default is True
+                rule=rule.get("rule"),
+                author=rule.get("author", []),
+                group=rule.get("group", ""),
+                tags=rule.get("tags", []),
+                data=rule.get("data", {}),
+                description=rule.get("description", ""),
+                path="",
+                sigma=rule.get("sigma", False),
+            )
 
         if (
             not rule_data.id
@@ -243,6 +265,8 @@ class Detector:
             if not rule:
                 logger.debug(f"Rule not found: {rule_path}")
                 return
+            if self.datasource:
+                rule.rule = self.datasource.parse_sigma(rule)
             await self.add_rule(rule)
 
     async def reload_rule_by_path(self, path: str):
@@ -250,6 +274,8 @@ class Detector:
             rule = await self.load_rule_path(path)
             if not rule:
                 return
+            if hasattr(self, "datasource") and self.datasource:
+                rule.rule = self.datasource.parse_sigma(rule)
             abs_path = str(Path(path).resolve())
             async with self._rule_lock:
                 self._rules = [r for r in self._rules if r.path != abs_path]
@@ -264,9 +290,10 @@ class Detector:
     async def load_rule_path(self, rule_path: str) -> Rule | None:
         logger.info(f"Loading rule: {rule_path}")
         try:
-            with open(rule_path, "r") as f:
-                data = safe_load(f)
-            rule_loaded = await self.load_rule_buffer(data)
+            _rule_path = Path(rule_path)
+            data_raw = _rule_path.read_text()
+            data = safe_load(data_raw)
+            rule_loaded = await self.load_rule_buffer(data, data_raw)
             if not rule_loaded:
                 raise Exception("Rule not loaded")
             rule_loaded.path = str(Path(rule_path).resolve())
@@ -288,8 +315,17 @@ class Detector:
                         await self.add_rule(r)
         return self._rules
 
+    async def load_sigma(self):
+        if not self.datasource:
+            return  # not load until detector is full loaded
+        for r in self._rules:
+            r.rule = self.datasource.parse_sigma(r)
+
     async def setActive(self, active: bool):
         self.active = active
+
+    async def setAllIsSigma(self, val: bool):
+        self.all_is_sigma = val
 
     def to_dict(self):
         return {
@@ -302,4 +338,5 @@ class Detector:
             "tenant": self.tenant,
             "active": self.active,
             "datasource": self.datasource.to_dict(),
+            "sigma": self.all_is_sigma
         }

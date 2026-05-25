@@ -63,6 +63,7 @@ A map of detector configurations. Each key is an internal identifier for the det
 | `rules` | yes | — | List of rule file paths or glob patterns |
 | `webhooks` | no | `[]` | List of webhook names to notify |
 | `data` | no | `{}` | Custom key/value data passed to rule templates as `{{ detector.data }}` |
+| `sigma` | no | `false` | Treat all rules in this detector as Sigma rules |
 
 ### Interval format
 

@@ -1,9 +1,11 @@
+import aiohttp
 from typing import Any, Dict, List
 from logging import getLogger
-import aiohttp
-
+from clickdetect.detector.rules import Rule
 from ..utils import Parameters
 from .base import BaseDataSource, DataSourceQueryResult
+from sigma.backends.opensearch.opensearch_ppl import OpenSearchPPLBackend
+from sigma.collection import SigmaCollection
 
 logger = getLogger(__name__)
 
@@ -55,7 +57,7 @@ class OpensearchPPLDataSource(BaseDataSource):
             return None
         try:
             resp = await self._session.post(
-                f"{self._base_url()}/_plugins/_sql", json={"query": data}
+                f"{self._base_url()}/_plugins/_ppl", json={"query": data}
             )
             resp.raise_for_status()
             resp_data = await resp.json()
@@ -72,6 +74,21 @@ class OpensearchPPLDataSource(BaseDataSource):
         columns = [col.get("name") for col in resp.get("schema", [])]
         result = [dict(zip(columns, rows)) for rows in resp.get("datarows", [])]
         return DataSourceQueryResult(size, result, self._name())
+
+    def parse_sigma(self, rule: Rule) -> str:
+        if not rule.sigma:
+            return rule.rule
+        backend = OpenSearchPPLBackend()
+        rule_data = SigmaCollection.from_yaml(rule.rule)
+        return backend.convert(rule_data)[0]
+
+    def parse_sigma_rule(self, data: str) -> str:
+        backend = OpenSearchPPLBackend()
+        rule_data = SigmaCollection.from_yaml(data)
+        result = backend.convert(rule_data)
+        if not result:
+            raise ValueError("Sigma rule produced no output for opensearch-ppl backend")
+        return result[0]
 
     @classmethod
     def _name(cls) -> str:
