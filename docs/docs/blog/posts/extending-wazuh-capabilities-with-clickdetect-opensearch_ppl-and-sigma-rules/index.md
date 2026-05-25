@@ -21,6 +21,8 @@ pin: false
 
 Hey, souzo here. If you've ever wanted alerting rules that actually work in Wazuh without fighting OpenSearch's detection engine, this post is for you.
 
+> Repository: [https://github.com/clicksiem/clickdetect](https://github.com/clicksiem/clickdetect)
+
 In this blog post I will guide you to:
 - Install and configure Opensearch PPL in an existing Wazuh environment
 - Install and configure clickdetect
@@ -306,3 +308,12 @@ With this blog post now you can:
 - Improve your SOC team.
 
 Clickdetect is not affiliated to ClickHouse, and I'm not sponsored (yet).
+
+If this post helped you, consider giving [clickdetect a star on GitHub](https://github.com/clicksiem/clickdetect) — it helps the project reach more security teams. :star:
+
+Follow my social:
+* *E-mail*: me@souzo.me
+* *Matrix*: @souzo:matrix.org
+- *Twitter/X*: [https://x.com/souzomain](https://x.com/souzomain)
+- *Linkedin*: [https://www.linkedin.com/in/vinicius-m-a76ba51b5/](https://www.linkedin.com/in/vinicius-m-a76ba51b5/)
+- *Reddit*: [https://www.reddit.com/user/_souzo/](https://www.reddit.com/user/_souzo/)
