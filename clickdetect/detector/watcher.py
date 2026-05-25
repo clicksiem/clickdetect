@@ -38,6 +38,11 @@ class RuleWatcher:
         logger.info(f"Watching rule paths: {watch_paths}")
 
         async for changes in awatch(*watch_paths):
+            atomic_save_paths: set[str] = {
+                path for change, path in changes
+                if change == Change.deleted and Path(path).exists()
+                and (path.endswith('.yml') or path.endswith('.yaml'))
+            }
             for change, path in changes:
                 if not (path.endswith('.yml') or path.endswith('.yaml')):
                     continue
@@ -50,6 +55,8 @@ class RuleWatcher:
                     ):
                         continue
                     if change == Change.added:
+                        if path in atomic_save_paths:
+                            continue
                         logger.info(f"Rule added: {path}")
                         await detector.add_rule_by_path(path)
                     elif change == Change.modified:
