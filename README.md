@@ -87,6 +87,7 @@ podman run -v ./runner.yml:/app/runner.yml -p 8080 ghcr.io/clicksiem/clickdetect
 | `--list-webhooks` | off | List webhooks |
 | `--list-datasources` | off | List datasources |
 | `--list-plugins` | off | List all plugins |
+| `--sigma` | off | Threat all rules as Sigma rule |
 
 ## Runner Configuration
 
@@ -115,6 +116,7 @@ detectors:
         description: "detect rules with 5 min interval"
         rules:
             - "<your rule path>"
+        sigma: true # threat all rules for this detector as sigma rule
         webhooks:
             - generic_webhook
         data:
