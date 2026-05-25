@@ -1,4 +1,3 @@
-from clickdetect.detector.rules import Rule
 from ..utils import Parameters
 from typing import List
 from clickhouse_connect import get_async_client
