@@ -73,6 +73,14 @@ This greatly increases the possibility of turning OpenSearch into a SIEM instead
 
 If you want SQL, try clickhouse or postgresql of tigerdata. PPL makes more sense for Opensearch environment.
 
+## Architecture
+
+Here's how all the pieces fit together:
+
+![Architecture diagram](./diagram.png)
+
+Wazuh ships events into the OpenSearch indexer. Clickdetect queries the indexer using PPL (or compiled Sigma rules), evaluates the configured rules on a schedule, and fires alerts to your webhooks when a condition is met.
+
 # Let's bora
 
 ## Installing Opensearch PPL in Wazuh
@@ -124,7 +132,7 @@ group: base_rule
 tags: 
     - base
 rule: |-
-    search earliest=-5m latest=now source=wazuh-indexer-* | where rule_id=502
+    search source=wazuh-alerts-* | where rule.id='502' and `@timestamp` >= DATE_SUB(NOW(), INTERVAL 5 HOUR )
 EOF
 ```
 
@@ -171,6 +179,24 @@ docker run -v ./runner.yml:/app/runner.yml -v ./rules/:/app/rules/ ghcr.io/click
 
 ### Results
 
+*Running*
+
+![Running](./running-result.png)
+
+Clickdetect starts up, loads the rule from `rules/`, and schedules the detector to run every 5 minutes.
+
+*Results in terminal*
+
+![terminal result](./result-raw.png)
+
+The terminal output shows the rule matched at least one event. Each match includes the rule name, level, and the raw document returned by the PPL query.
+
+*Results in teams*
+
+![teams webhook](./result-teams.png)
+
+The Teams webhook delivers the alert card with the rule name, severity level, and a summary of the matched events.
+
 # Going further
 
 This is an extra to you understand the potential.
@@ -179,8 +205,9 @@ This is an extra to you understand the potential.
 
 You can use sigma rules with clickdetect, check out the documentation. [https://clickdetect.souzo.me/sigma/](https://clickdetect.souzo.me/sigma/)
 
-
 ### Configure rule
+
+> *WARNING*: opensearch PPL sigma backend I'ts aligned with the latest opensearch version, "*earliest*" and "*latest*" I'ts not recorinized in wazuh indexer 2.19
 
 Let's create the sigma rule directory and save the sigma rule.
 
@@ -200,7 +227,7 @@ logsource:
     category: indexer
 detection:
     sel:
-        rule_id: 502
+        rule.id: '502'
     condition: 1 of sel
 custom:
     opensearch_ppl_min_time: "-5m"
@@ -261,6 +288,12 @@ plugins:
         model: 'deepseek-chat'
         token: '<token>'
 ```
+
+### Results
+
+This is the result of clickagentic with teams webhook.
+
+![clickdetect + ai agent](./result-teams-ai.png)
 
 Check out the documentation: [https://clickdetect.souzo.me/plugin/clickagentic/](https://clickdetect.souzo.me/plugin/clickagentic/)
 
