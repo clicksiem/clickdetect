@@ -37,7 +37,6 @@ conventional_commits = true
 require_conventional = false
 commit_parsers = [
     { message = "^chore\\(release\\)", skip = true },
-    { message = "^chore\\(deps\\)", skip = true },
     { message = "^chore\\(deps-dev\\)", skip = true },
     { message = "^chore\\(docs\\)", skip = true },
     { message = "^chore\\(ign\\)", skip = true },
@@ -46,6 +45,7 @@ commit_parsers = [
     { message = ".*\\(webhook\\)", group = "<!-- 2 --> 🪝 Webhook Changes"},
     { message = ".*\\(datasource\\)", group = "<!-- 3 --> 🗃️ Datasource Changes"},
     { message = ".*\\(api\\)", group = "<!-- 4 --> 🔌 API"},
+    { message = "^chore\\(deps\\)", skip = false },
     { message = "^feat", group = "<!-- 0 --> 🚀 Features"},
     { message = "^fix", group = "<!-- 1 --> 🐛 Bug Fixes"},
     { message = "^docs", group = "<!-- 6 --> 📝 Documentation"},
