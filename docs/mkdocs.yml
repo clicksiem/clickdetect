@@ -58,6 +58,8 @@ nav:
       - Email: webhooks/email.md
       - Forgejo: webhooks/forgejo.md
       - DFIR-IRIS: webhooks/iris.md
+      - TheHive: webhooks/thehive.md
+      - OpsGenie: webhooks/opsgenie.md
       - Slack: webhooks/slack.md
       - Telegram: webhooks/telegram.md
       - Matrix: webhooks/matrix.md
