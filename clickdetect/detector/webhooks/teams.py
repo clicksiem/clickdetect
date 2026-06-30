@@ -18,6 +18,7 @@ DEFAULT_TEMPLATE = """{
             { "name": "Group", "value": "{{ rule.group }}" },
             { "name": "Tags", "value": "{{ rule.tags | join(', ') }}" },
             { "name": "Matches", "value": "{{ data.len }}" },
+            { "name": "Results", "value": {{ data.value | tojson | tojson }} },
             { "name": "Detector", "value": "{{ detector.name }}" },
             { "name": "Tenant", "value": "{{ detector.tenant }}" }
         ],
