@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.15.0] - 2026-06-30
+
+### 🪝 Webhook Changes
+
+- *(webhook)* Add opsgenie webhook by @souzomain
+- *(webhook)* Add thehive webhook by @souzomain
+- *(webhook)* Add opsgenie webhook documentation by @souzomain
+- *(webhook)* Add thehive webhook documentation by @souzomain
+
 ## [1.14.1] - 2026-06-30
 
 ### 🪝 Webhook Changes
