@@ -8,6 +8,8 @@ from .teams import TeamsWebhook
 from .email import EmailWebhook
 from .iris import DfirIRISWebhook
 from .slack import SlackWebhook
+from .thehive import TheHiveWebhook
+from .opsgenie import OpsGenieWebhook
 # from .matrix import MatrixWebhook
 
 
@@ -20,5 +22,7 @@ webhooks: List[Type[BaseWebhook]] = [
     SlackWebhook,
     TelegramWebhook,
     DiscordWebhook,
+    TheHiveWebhook,
+    OpsGenieWebhook,
     # MatrixWebhook,
 ]
