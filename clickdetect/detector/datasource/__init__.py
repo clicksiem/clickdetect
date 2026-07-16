@@ -9,6 +9,7 @@ from .victorialogs import VictoriaLogsDataSource
 from .opensearch import OpensearchDataSource
 from .opensearch_ppl import OpensearchPPLDataSource
 from .databricks import DatabricksDataSource
+from .duckdb import DuckDBDataSource
 
 
 datasources: List[Type[BaseDataSource]] = [
@@ -20,4 +21,5 @@ datasources: List[Type[BaseDataSource]] = [
     PostgreSQLDataSource,
     VictoriaLogsDataSource,
     DatabricksDataSource,
+    DuckDBDataSource,
 ]
