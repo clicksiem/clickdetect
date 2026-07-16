@@ -46,6 +46,7 @@ commit_parsers = [
     { message = ".*\\(datasource\\)", group = "<!-- 3 --> 🗃️ Datasource Changes"},
     { message = ".*\\(api\\)", group = "<!-- 4 --> 🔌 API"},
     { message = "^chore\\(deps\\)", skip = false },
+    { message = "^test", skip = false },
     { message = "^feat", group = "<!-- 0 --> 🚀 Features"},
     { message = "^fix", group = "<!-- 1 --> 🐛 Bug Fixes"},
     { message = "^docs", group = "<!-- 6 --> 📝 Documentation"},
