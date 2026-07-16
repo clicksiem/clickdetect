@@ -4,5 +4,5 @@ __pycache__/
 docs/dist/
 /runner.yml
 .ruff_cache
-test.yml
+test*.yml
 .pytest_cache

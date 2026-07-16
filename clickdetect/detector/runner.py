@@ -15,10 +15,13 @@ logger = getLogger(__name__)
 class Runner:
     plugins_config: List[Dict[str, Any]]
 
-    def __init__(self, data: Any, all_is_sigma: bool = False) -> None:
+    def __init__(
+        self, data: Any, all_is_sigma: bool = False, dry_run: bool = False
+    ) -> None:
         self.data = data
         self.plugins_config = []
         self.all_is_sigma = all_is_sigma
+        self._dry_run = dry_run
 
     async def init(self) -> Self:
         await self.load_runner()
@@ -135,7 +138,8 @@ class Runner:
                 data=detector.get("data"),
                 tenant=detector.get("tenant", "default"),
                 active=detector.get("active", True),
-                all_is_sigma=detector.get('sigma', False)
+                all_is_sigma=detector.get("sigma", False),
+                _dry_run=self._dry_run,
             )
             if self.all_is_sigma:
                 await detector_obj.setAllIsSigma(True)

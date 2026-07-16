@@ -1,4 +1,5 @@
 from clickdetect.detector.manager import set_manager_instance, Manager
+import sys
 import asyncio
 import uvicorn
 import argparse
@@ -18,18 +19,20 @@ from .detector.plugin import PluginSystem
 
 logger = getLogger(__name__)
 
+
 async def printPlugins():
     config.disableLogging()
     set_manager_instance(Manager())
     psys = PluginSystem()
-    print('Loading plugins')
+    print("Loading plugins")
     await psys.load()
     for plugin in psys.plugins:
-        print(f'Id: {plugin.id}')
-        print(f'\tName: {plugin.name}')
-        print(f'\tVersion: {plugin.version}')
+        print(f"Id: {plugin.id}")
+        print(f"\tName: {plugin.name}")
+        print(f"\tVersion: {plugin.version}")
         print()
     exit(0)
+
 
 def printWebhooks():
     for w in webhooks:
@@ -87,7 +90,7 @@ async def load_runner(args: Any) -> Runner | None:
         logger.fatal("Invalid runner. The loaded runner is not a valid yaml")
         exit(1)
 
-    runner = await Runner(data, args.sigma).init()
+    runner = await Runner(data, all_is_sigma=args.sigma, dry_run=args.dry_run).init()
     if not runner:
         logger.warning("Runner not loaded")
         return None
@@ -126,6 +129,7 @@ async def main():
     parser = argparse.ArgumentParser(
         description=f"{config.app_name} is a tool to detect patterns and alerts in clickhouse and others database"
     )
+
     parser.add_argument(
         "--api",
         required=False,
@@ -133,6 +137,7 @@ async def main():
         action="store_true",
         help="Enable api, required for clicksiem-backend",
     )
+
     parser.add_argument(
         "-p",
         "--port",
@@ -140,6 +145,7 @@ async def main():
         type=int,
         help=f"specify api port, default: {config.default_port}",
     )
+
     parser.add_argument(
         "-r",
         "--runner",
@@ -147,47 +153,60 @@ async def main():
         type=str,
         help=f"Runner file containing webhook, datasources, detectors and rules. Default: {config.default_runner}",
     )
+
     parser.add_argument(
         "--stdin", default=False, action="store_true", help="Read file from stdin"
     )
+
     parser.add_argument(
         "--version", default=False, action="store_true", help="Project version"
     )
+
     parser.add_argument(
         "-v", "--verbose", default=False, action="store_true", help="Add verbosity"
     )
+
     parser.add_argument(
         "--reload",
         default=False,
         action="store_true",
         help="Watch rule files and reload on changes",
     )
+
     parser.add_argument(
         "--no-start",
         default=False,
         action="store_true",
         help="Do not start detectors on start",
     )
+
     parser.add_argument(
         "--list-webhooks", default=False, action="store_true", help="List all webhooks"
     )
+
     parser.add_argument(
         "--list-datasources",
         default=False,
         action="store_true",
         help="List all datasources",
     )
+
     parser.add_argument(
-        '--list-plugins',
-        default=False,
-        action='store_true',
-        help="List all plugins"
+        "--list-plugins", default=False, action="store_true", help="List all plugins"
     )
+
     parser.add_argument(
-        '--sigma',
+        "--sigma",
         default=False,
-        action='store_true',
-        help="All rules discovered will be parsed as sigma"
+        action="store_true",
+        help="All rules discovered will be parsed as sigma",
+    )
+
+    parser.add_argument(
+        "--dry-run",
+        default=False,
+        action="store_true",
+        help="Dry run (for cicd)",
     )
 
     args = parser.parse_args()
@@ -204,12 +223,12 @@ async def main():
 
     if args.list_plugins:
         await printPlugins()
-    
+
     config.logConfig(verbose=args.verbose)
     logger = getLogger(__name__)
 
     if args.sigma:
-        logger.info('Running all_sigma mode. all rules discovered needs to be sigma')
+        logger.info("Running all_sigma mode. all rules discovered needs to be sigma")
 
     if not f_exists(args.runner) and not args.stdin:
         logger.fatal(f"File {args.runner} does not exists")
@@ -226,7 +245,7 @@ async def main():
     except asyncio.CancelledError:
         pass
     except Exception as ex:
-        logger.error(f'Exception: {str(ex)}')
+        logger.error(f"Exception: {str(ex)}")
 
 
 def run():
@@ -234,6 +253,8 @@ def run():
         asyncio.run(main())
     except KeyboardInterrupt:
         pass
+    sys.exit(config.dry_run_code)
+
 
 if __name__ == "__main__":
     run()

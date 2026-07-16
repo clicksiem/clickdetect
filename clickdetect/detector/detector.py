@@ -4,7 +4,6 @@ from typing import Any, List
 from glob import glob
 from pathlib import Path
 from json import dumps
-from uuid import uuid4
 from yaml import safe_load
 from logging import getLogger
 from datetime import datetime, timedelta
@@ -43,6 +42,7 @@ class Detector:
     _rule_eval_sem: Semaphore = field(default_factory=Semaphore)
     _hooks: HookRegistry | None = field(default=None)
     jinja_env: Environment = field(default_factory=Environment)
+    _dry_run: bool = field(default=False)
 
     def __post_init__(self):
         for_time_seconds = utils.parse_interval_to_seconds(self.for_time)
@@ -73,6 +73,11 @@ class Detector:
         self._rule_eval_sem = Semaphore(config.rule_eval_semaphore)
         self._webhook_sem = Semaphore(config.webhook_send_semaphore)
 
+    async def dry_run(self, val: bool):
+        logger.debug('dry run %s', val)
+        if self._dry_run:
+            await config.stop_running(0 if val else 1)
+
     async def call_webhook(
         self, rule: Rule, value: DataSourceQueryResult, time: Tuple[float, float]
     ):
@@ -83,6 +88,7 @@ class Detector:
             rule_dict["description"] = self.jinja_env.from_string(
                 rule.description
             ).render(rule=rule, detector=self, data=rule.data)
+
             template_data = {
                 "rule": utils.JsonDict(rule_dict),
                 "data": utils.JsonDict(value.to_dict()),
@@ -139,21 +145,26 @@ class Detector:
                 logger.debug(f"Rule id: {rule.id}")
                 logger.debug(f"Rule name: {rule.name}")
                 logger.debug(f"rule query:\n {query}\n")
+
                 result = await self.datasource._query(query, rule)
 
                 if result is None:
+                    await self.dry_run(False)
                     logger.warning("Datasource unavailable, skipping rule evaluation")
                     return
 
                 if rule.verify_condition(result.len):
+                    await self.dry_run(True)
                     logger.info(f"Rule triggered | ID: {rule.id} | Name: {rule.name}")
                     create_task(self.call_webhook(rule, result, (startime, endtime)))
                 else:
+                    await self.dry_run(False)
                     logger.debug(
                         f"Rule not triggered | ID: {rule.id} | Name: {rule.name}"
                     )
 
             except Exception as ex:
+                await self.dry_run(False)
                 logger.error(
                     f"Unhandled exception: Rule id: {rule.id} | Exception: {str(ex)}"
                 )
@@ -298,7 +309,7 @@ class Detector:
                 raise Exception("Rule not loaded")
             rule_loaded.path = str(Path(rule_path).resolve())
             return rule_loaded
-        except (FileNotFoundError, FileExistsError):
+        except FileNotFoundError, FileExistsError:
             logger.error("Rule file does not exists")
             return None
         except Exception as ex:
@@ -338,5 +349,5 @@ class Detector:
             "tenant": self.tenant,
             "active": self.active,
             "datasource": self.datasource.to_dict(),
-            "sigma": self.all_is_sigma
+            "sigma": self.all_is_sigma,
         }

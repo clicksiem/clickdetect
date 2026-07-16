@@ -5,6 +5,7 @@ from importlib.metadata import version as get_version
 
 _lock = Lock()
 running = True
+dry_run_code: int = 0
 rule_eval_semaphore = 7
 webhook_send_semaphore = 7
 
@@ -34,9 +35,12 @@ async def is_running():
         return running
 
 
-async def stop_running():
-    global running
+async def stop_running(code: int = 0):
+    global running, dry_run_code
     async with _lock:
+        if not running:  # already stopping: keep the first code
+            return
+        dry_run_code = code
         running = False
 
 
