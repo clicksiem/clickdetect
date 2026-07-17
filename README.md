@@ -31,6 +31,7 @@ Follow the doc: [https://clickdetect.souzo.me](https://clickdetect.souzo.me)
 - Opensearch
 - Opensearch PPL
 - Databricks
+- Duckdb
 
 ### Webhooks
 
@@ -42,6 +43,8 @@ Follow the doc: [https://clickdetect.souzo.me](https://clickdetect.souzo.me)
 - Slack
 - Telegram
 - Discord
+- TheHive
+- Opsgenie
 
 ### Plugins
 
@@ -66,13 +69,13 @@ uv run clickdetect --api
 
 ```sh
 podman build -t clickdetect .
-podman run -v ./runner.yml:/app/runner.yml -p 8080 clickdetect --api -p 8080
+podman run -v ./runner.yml:/app/runner.yml -p 8080:8080 clickdetect --api -p 8080
 ```
 
 #### GitHub Packages
 
 ```sh
-podman run -v ./runner.yml:/app/runner.yml -p 8080 ghcr.io/clicksiem/clickdetect:latest --api -p 8080
+podman run -v ./runner.yml:/app/runner.yml -p 8080:8080 ghcr.io/clicksiem/clickdetect:latest --api -p 8080
 ```
 
 ## Options
