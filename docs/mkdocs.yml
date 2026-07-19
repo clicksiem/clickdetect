@@ -43,6 +43,7 @@ nav:
     - Runner: runner.md
     - Rules: rules.md
     - Sigma: sigma.md
+    - High Availability: high-availability.md
     - Datasources:
       - Overview: datasource/index.md
       - ClickHouse: datasource/clickhouse.md

@@ -43,6 +43,25 @@ plugins:
         option1: value1
 ```
 
+## `redis`
+
+An optional block that enables high-availability, multi-replica deployments. Without it, Clickdetect runs single-node with in-memory scheduling state. See [High Availability](high-availability.md) for details.
+
+```yaml
+redis:
+    url: redis://localhost:6379/0
+    namespace: clickdetect
+    lock_ttl: 1500
+```
+
+## `max_detector_time`
+
+An optional global cap, in seconds, on how long a single detector cycle may run. If a cycle exceeds it, every rule still running is cancelled so a hung query can't stall the detector; the window advances and the next cycle proceeds normally. Applies to all detectors. Omit it (the default) for no limit.
+
+```yaml
+max_detector_time: 120
+```
+
 ## `webhooks`
 
 A map of named webhook configurations. Each webhook has a `type` and type-specific fields. See the [Webhooks](webhooks/index.md) section for available types.
