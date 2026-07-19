@@ -7,6 +7,18 @@ datasource:
     password: default
     database: soc
 
+# Optional: enable high-availability (multi-replica with failover).
+# Without this block, Clickdetect runs single-node with in-memory state.
+# See https://clickdetect.souzo.me/high-availability/
+#redis:
+#    url: redis://localhost:6379/0
+#    namespace: clickdetect
+#    lock_ttl: 1500   # failover latency in seconds (lock auto-renews while running)
+
+# Optional: cap (seconds) on how long a detector cycle may run. On timeout,
+# running rules are cancelled so a hung query can't stall the detector.
+#max_detector_time: 120
+
 webhooks:
     generic_webhook:
         type: generic
