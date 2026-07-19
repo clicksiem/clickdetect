@@ -20,6 +20,7 @@ dependencies = [
     "pysigma-backend-loki>=0.13.0",
     "duckdb>=1.5.4",
     "pytest-asyncio>=1.4.0",
+    "redis>=8.0.1",
 ]
 authors = [
     { name = "Vinicius Morais", email = "me@souzo.me" }
