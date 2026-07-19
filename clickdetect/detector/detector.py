@@ -7,12 +7,13 @@ from json import dumps
 from yaml import safe_load
 from logging import getLogger
 from datetime import datetime, timedelta
-from asyncio import create_task, Semaphore, gather, Lock as a_lock
+from asyncio import create_task, Semaphore, gather, wait, CancelledError, Lock as a_lock
 from jinja2 import Environment
 from .webhooks.base import BaseWebhook
 from .datasource.base import DataSourceQueryResult, BaseDataSource
 from .rules import Rule
 from .hooks import HookRegistry, EventEnum
+from .store import BaseDataStore, create_store
 from . import utils
 from . import config
 
@@ -30,8 +31,10 @@ class Detector:
     tenant: str = field(default="default")
     active: bool = field(default=True)
     all_is_sigma: bool = field(default=False)
+    max_detector_time: float | None = field(default=None)
 
     datasource: BaseDataSource = field(init=False)
+    store: BaseDataStore = field(init=False)
     _rules: List[Rule] = field(default_factory=list)
     _webhooks: List[BaseWebhook] = field(default_factory=list)
     _last_time: float = field(default_factory=float)
@@ -72,6 +75,16 @@ class Detector:
         self._callback_rule_lock = a_lock()
         self._rule_eval_sem = Semaphore(config.rule_eval_semaphore)
         self._webhook_sem = Semaphore(config.webhook_send_semaphore)
+
+        self.store = create_store(self.store_key, None)
+
+    @property
+    def store_key(self) -> str:
+        return f"{self.tenant}:{self.name}:{self.for_time}"
+
+    async def setup_store(self, redis_config: Any):
+        self.store = create_store(self.store_key, redis_config)
+        await self.store.connect()
 
     async def dry_run(self, val: bool):
         logger.debug('dry run %s', val)
@@ -174,23 +187,44 @@ class Detector:
             logger.debug(f"Canceling Detector {self.name} callback")
             return
 
-        logger.debug(f"Running detector {self.name} | Rules: {self._rules.__len__()}")
+        async with self.store.lock() as acquired:
+            if not acquired:
+                logger.debug(f"Skipping detector {self.name}: replica is already running")
+                return
 
-        endtime = datetime.now().timestamp()
-        startime = self._last_time
-        self._last_time = endtime
-        self._next_time = endtime + self.for_time_seconds
+            logger.debug(
+                f"Running detector {self.name} | Rules: {self._rules.__len__()}"
+            )
 
-        async with self._callback_rule_lock:
-            rules_snapshot = self._rules.copy()
+            endtime = datetime.now().timestamp()
+            startime = await self.store.get_last_time() or self._last_time
+            self._last_time = endtime
+            self._next_time = endtime + self.for_time_seconds
 
-        await gather(
-            *[
-                self.evaluate_rule(rule, startime, endtime)
-                for rule in rules_snapshot
-                if rule.active
-            ]
-        )
+            async with self._callback_rule_lock:
+                rules_snapshot = self._rules.copy()
+
+            gathered = gather(
+                *[
+                    self.evaluate_rule(rule, startime, endtime)
+                    for rule in rules_snapshot
+                    if rule.active
+                ]
+            )
+
+            _, pending = await wait({gathered}, timeout=self.max_detector_time)
+            if pending:
+                logger.warning(
+                    f"Detector {self.name}: exceeded max_detector_time "
+                    f"({self.max_detector_time}s), cancelling running rules"
+                )
+                gathered.cancel()
+                try:
+                    await gathered
+                except CancelledError:
+                    pass
+
+            await self.store.set_last_time(endtime)
 
     async def get_rule_by_id(self, id: str):
         async with self._rule_lock:
@@ -350,4 +384,5 @@ class Detector:
             "active": self.active,
             "datasource": self.datasource.to_dict(),
             "sigma": self.all_is_sigma,
+            'max_detector_time': self.max_detector_time
         }

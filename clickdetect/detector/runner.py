@@ -31,6 +31,8 @@ class Runner:
         data = self.data
         self.manager = Manager()
         set_manager_instance(self.manager)
+        self.redis_config = data.get("redis", None)
+        self.max_detector_time = data.get("max_detector_time", None)
         self.datasource = await self.parse_datasource(data.get("datasource", None))
         self.webhooks = await self.parse_webhooks(data.get("webhooks", None))
         self.detectors = await self.parse_detectors(data.get("detectors", None))
@@ -62,6 +64,13 @@ class Runner:
         logger.info("loading detectors")
         for detector in self.detectors:
             detector.datasource = self.datasource
+            try:
+                await detector.setup_store(self.redis_config)
+            except Exception as ex:
+                logger.error(
+                    f"Error connecting store for detector {detector.name}: {str(ex)}"
+                )
+                exit(1)
             if detector.all_is_sigma:
                 await detector.load_rules_directory()
             detector._hooks = self.plugin_system.hooks
@@ -139,6 +148,7 @@ class Runner:
                 tenant=detector.get("tenant", "default"),
                 active=detector.get("active", True),
                 all_is_sigma=detector.get("sigma", False),
+                max_detector_time=self.max_detector_time,
                 _dry_run=self._dry_run,
             )
             if self.all_is_sigma:
@@ -184,3 +194,5 @@ class Runner:
         if self.webhooks:
             for webhook in self.webhooks:
                 await webhook.close()
+        for detector in self.detectors:
+            await detector.store.close()
