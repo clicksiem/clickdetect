@@ -6,20 +6,26 @@ Made in :brazil: | ![GitHub Repo stars](https://img.shields.io/github/stars/clic
 
 ![clickdetect running](docs/docs/assets/clickdetect-runner-demo.avif)
 
-Clickdetect is a generic alerting and detection engine that supports any data source and integrates with any webhook. It is vendor-agnostic, with no lock-in, and enables powerful, flexible detection workflows.
+ClickDetect is a vendor-agnostic alerting framework for threshold-based detection. 
 
-Follow the doc: [https://clickdetect.souzo.me](https://clickdetect.souzo.me)
+It have a flexible integration system for datasource and webhooks to easly integrate your platform. 
+
+Follow the documentation: [https://clickdetect.souzo.me](https://clickdetect.souzo.me)
 
 ## Core Concepts
+
+This is the core concepts for clickdetect.
 
 - Runner.yml: The file where you configure everything
 - Detector: Component that runs rules based on thresholds
 - Rule: File with structured format to define datasource analysis
 - Datasource: Where rule queries are executed, like a database or another SIEM engine
 - Webhooks: Where alerts are sent
-- Plugin: Script that can intercept Clickdetect actions like "on_rule_triggered"
+- Plugin: Script that can intercept Clickdetect actions like `on_rule_triggered`
 
 ## Supported Integrations
+
+These are the active integrations, but they are not limited to them.
 
 ### Datasources
 
@@ -159,20 +165,24 @@ See [High Availability](https://clickdetect.souzo.me/high-availability/) for det
 
 ## Rule Configuration
 
+You can configure your rules using `yaml` format. The field `rule` is generic, you can put your DQL, SQL, LogQL or whatever you have configured on the datasource.
+
+
 ```yaml
-id: "00000000-0000-0000-0000-000000000000"
-name: "Base rule for help"
-level: 50
-size: ">0"
-active: false
-author: 
+id: "00000000-0000-0000-0000-000000000000" # id of your rule
+name: "Base rule for help" # name of your rule
+level: 50 # rule level
+size: ">0" # >, <, =, >=, <= this define if the values returned by the query will trigger an alert
+sigma: false # If the rule will be treated as Sigma Rule. this depends if your datasource supports sigma.
+active: false # if the rule is active
+author: # rule author
     - Vinicius Morais <me@souzo.me>
-group: < group >
-tags: 
+group: < group > # rule groups
+tags:  # rule tags
     - <tags>
 data: # variables sent to rules by jinja
     max_match_time: 5
-rule: |-
+rule: |- # your rule based on your datasourcec
     < rule >
 ```
 
@@ -209,6 +219,8 @@ See [Severity levels](https://clickdetect.souzo.me/rules/#severity-levels) for d
 See the latest [releases and changelog](https://github.com/clicksiem/clickdetect/releases)
 
 ## Contact
+
+You can find me using this methods.
 
 * *E-mail*: me@souzo.me
 * *Matrix*: @souzo:matrix.org
