@@ -10,6 +10,7 @@ from .iris import DfirIRISWebhook
 from .slack import SlackWebhook
 from .thehive import TheHiveWebhook
 from .opsgenie import OpsGenieWebhook
+from .alertmanager import AlertManagerWebhook
 # from .matrix import MatrixWebhook
 
 
@@ -24,5 +25,6 @@ webhooks: List[Type[BaseWebhook]] = [
     DiscordWebhook,
     TheHiveWebhook,
     OpsGenieWebhook,
+    AlertManagerWebhook,
     # MatrixWebhook,
 ]
