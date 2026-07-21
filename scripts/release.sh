@@ -24,6 +24,9 @@ echo "Next version: $NEXT_VERSION"
 # Update version in pyproject.toml
 sed -i "s/^version = \"[^\"]*\"/version = \"$VERSION_NO_V\"/" pyproject.toml
 
+# Sync lockfile with the new version
+uv lock
+
 # Generate full changelog
 uv run git-cliff -c cliff.toml --unreleased --bump --prepend CHANGELOG.md
 uv run git-cliff -c cliff.toml --unreleased --bump  > NEXT_RELEASE.md
@@ -52,7 +55,7 @@ cat NEXT_RELEASE.md >> $BLOG_POST
 uv build
 
 # Stage and commit
-git add pyproject.toml CHANGELOG.md $BLOG_POST
+git add pyproject.toml uv.lock CHANGELOG.md $BLOG_POST
 git commit -m "chore(release): $VERSION_NO_V"
 
 # Create annotated tag
