@@ -14,6 +14,8 @@ webhooks:
         source: clickdetect # optional default(clickdetect), alert source
         tlp: 2 # optional default(2), Traffic Light Protocol level (0=WHITE, 1=GREEN, 2=AMBER, 3=RED)
         pap: 2 # optional default(2), Permissible Actions Protocol level (0=WHITE, 1=GREEN, 2=AMBER, 3=RED)
+        severity_map: # optional, minimum rule level of each severity band
+            critical: 90
         headers: # optional default({})
             X-Custom-Header: value
         verify: false # optional default(false)
@@ -21,14 +23,19 @@ webhooks:
 
 ## Severity mapping
 
-The alert severity is derived from the rule `level` field:
+The rule `level` is resolved into a [severity band](../rules.md#severity-levels), which maps
+to TheHive as:
 
-| Rule level | TheHive severity |
+| Band | TheHive severity |
 |---|---|
-| 0 – 3 | 1 — Low |
-| 4 – 7 | 2 — Medium |
-| 8 – 10 | 3 — High |
-| 11 – 15 | 4 — Critical |
+| `informational` | 1 — Low |
+| `low` | 1 — Low |
+| `medium` | 2 — Medium |
+| `high` | 3 — High |
+| `critical` | 4 — Critical |
+
+TheHive has no informational severity, so that band falls back to Low. Use the
+`severity_map` option to change the rule level at which each band starts.
 
 ## Notes
 

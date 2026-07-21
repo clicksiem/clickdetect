@@ -11,6 +11,8 @@ webhooks:
         url: https://iris.example.com # required
         api_key: '...' # required
         customer_id: 1 # required
+        severity_map: # optional, minimum rule level of each severity band
+            critical: 90
         headers: # optional default({})
             X-Custom-Header: value
         verify: false # optional default(false)
@@ -18,15 +20,18 @@ webhooks:
 
 ## Severity mapping
 
-The alert severity is derived from the rule `level` field:
+The rule `level` is resolved into a [severity band](../rules.md#severity-levels), which maps
+to DFIR-IRIS as:
 
-| Rule level | DFIR-IRIS severity |
+| Band | DFIR-IRIS severity |
 |---|---|
-| 0 – 3 | 1 — Informational |
-| 4 – 7 | 2 — Low |
-| 8 – 10 | 3 — Medium |
-| 11 – 13 | 4 — High |
-| 14 – 15 | 5 — Critical |
+| `informational` | 1 — Informational |
+| `low` | 2 — Low |
+| `medium` | 3 — Medium |
+| `high` | 4 — High |
+| `critical` | 5 — Critical |
+
+Use the `severity_map` option to change the rule level at which each band starts.
 
 ## Notes
 

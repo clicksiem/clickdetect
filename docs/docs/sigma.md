@@ -17,7 +17,7 @@ This way will parse sigma rule inside "rule"
 ```yml
 id: "000000000"
 name: "Rule example"
-level: 10
+level: 50
 size: ">0"
 active: true
 sigma: true # goes here

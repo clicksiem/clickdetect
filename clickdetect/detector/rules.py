@@ -31,6 +31,18 @@ class Rule:
         ">": lambda x, y: x > y,
     }
 
+    MIN_LEVEL: ClassVar[int] = 0
+    MAX_LEVEL: ClassVar[int] = 100
+
+    # sigma rules carry `level` as a string, map it into the clickdetect scale
+    sigma_levels: ClassVar[Dict[str, int]] = {
+        "informational": 10,
+        "low": 30,
+        "medium": 50,
+        "high": 75,
+        "critical": 90,
+    }
+
     def __post_init__(self):
         pattern = r"^(>=|<=|==|>|<)\s*(\d+)$"
         match = re.match(pattern, self.size.strip())
@@ -41,6 +53,30 @@ class Rule:
 
         self.condition_operator = match.group(1)
         self.condition_value = int(match.group(2))
+        self.level = self._parse_level(self.level)
+
+    @classmethod
+    def _parse_level(cls, level: Any) -> int:
+        if isinstance(level, str) and not level.strip().lstrip("-").isdigit():
+            value = cls.sigma_levels.get(level.strip().lower())
+            if value is None:
+                logger.error(f"Invalid rule level: {level}")
+                raise ValueError(f"Invalid rule level: {level}")
+            return value
+
+        try:
+            value = int(level)
+        except (TypeError, ValueError):
+            logger.error(f"Invalid rule level: {level}")
+            raise ValueError(f"Invalid rule level: {level}")
+
+        if not cls.MIN_LEVEL <= value <= cls.MAX_LEVEL:
+            logger.error(f"Rule level out of range: {value}")
+            raise ValueError(
+                f"Rule level must be between {cls.MIN_LEVEL} and {cls.MAX_LEVEL}: {value}"
+            )
+
+        return value
 
     def verify_condition(self, value: int) -> bool:
         logger.debug(f"verify_condition: {value} {self.size}")

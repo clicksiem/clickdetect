@@ -11,6 +11,8 @@ webhooks:
         api_key: '...' # required
         url: https://api.opsgenie.com/v2/alerts # optional default(https://api.opsgenie.com/v2/alerts), use https://api.eu.opsgenie.com/v2/alerts for the EU instance
         source: clickdetect # optional default(clickdetect)
+        severity_map: # optional, minimum rule level of each severity band
+            critical: 90
         headers: # optional default({})
             X-Custom-Header: value
         verify: false # optional default(false)
@@ -18,15 +20,18 @@ webhooks:
 
 ## Priority mapping
 
-The alert priority is derived from the rule `level` field:
+The rule `level` is resolved into a [severity band](../rules.md#severity-levels), which maps
+to OpsGenie as:
 
-| Rule level | OpsGenie priority |
+| Band | OpsGenie priority |
 |---|---|
-| 0 – 3 | P5 — Lowest |
-| 4 – 7 | P4 — Low |
-| 8 – 10 | P3 — Moderate |
-| 11 – 13 | P2 — High |
-| 14 – 15 | P1 — Critical |
+| `informational` | P5 — Lowest |
+| `low` | P4 — Low |
+| `medium` | P3 — Moderate |
+| `high` | P2 — High |
+| `critical` | P1 — Critical |
+
+Use the `severity_map` option to change the rule level at which each band starts.
 
 ## Notes
 

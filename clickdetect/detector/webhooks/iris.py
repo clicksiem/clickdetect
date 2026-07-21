@@ -9,12 +9,21 @@ logger = getLogger(__name__)
 
 
 class DfirIRISWebhook(BaseWebhook):
+    severity_ids: Dict[str, int] = {
+        "informational": 1,
+        "low": 2,
+        "medium": 3,
+        "high": 4,
+        "critical": 5,
+    }
+
     name: str
     url: str
     headers: Dict[str, str]
     verify: bool
     customer_id: int
     api_key: str
+    severity_map: Dict[str, int]
     session: ClientSession
 
     async def close(self):
@@ -29,17 +38,7 @@ class DfirIRISWebhook(BaseWebhook):
         rule = j_data.get("rule", {})
 
         level = rule.get("level", 0)
-        alert_severity_id = (
-            1
-            if level <= 3
-            else 2
-            if level <= 7
-            else 3
-            if level <= 10
-            else 4
-            if level <= 13
-            else 5
-        )
+        alert_severity_id = self.severity_ids[self._severity(level)]
 
         tags = rule.get("tags", [])
         alert_data = {
@@ -86,6 +85,7 @@ class DfirIRISWebhook(BaseWebhook):
                 "api_key", str, True, "DFIR-IRIS API key", is_sensive_field=True
             ),
             Parameters("customer_id", int, True, "DFIR-IRIS customer ID"),
+            cls._severity_param(),
             Parameters("headers", dict, False, "Extra HTTP headers", {}),
             Parameters("verify", bool, False, "SSL verify", False),
         ]

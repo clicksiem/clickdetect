@@ -9,12 +9,21 @@ logger = getLogger(__name__)
 
 
 class OpsGenieWebhook(BaseWebhook):
+    severity_priorities: Dict[str, str] = {
+        "informational": "P5",
+        "low": "P4",
+        "medium": "P3",
+        "high": "P2",
+        "critical": "P1",
+    }
+
     name: str
     url: str
     headers: Dict[str, str]
     verify: bool
     api_key: str
     source: str
+    severity_map: Dict[str, int]
     session: ClientSession
 
     async def close(self):
@@ -30,17 +39,7 @@ class OpsGenieWebhook(BaseWebhook):
         detector = j_data.get("detector", {})
 
         level = rule.get("level", 0)
-        priority = (
-            "P5"
-            if level <= 3
-            else "P4"
-            if level <= 7
-            else "P3"
-            if level <= 10
-            else "P2"
-            if level <= 13
-            else "P1"
-        )
+        priority = self.severity_priorities[self._severity(level)]
 
         tags = rule.get("tags", [])
         alert_data = {
@@ -95,6 +94,7 @@ class OpsGenieWebhook(BaseWebhook):
                 "api_key", str, True, "OpsGenie API key", is_sensive_field=True
             ),
             Parameters("source", str, False, "Alert source", "clickdetect"),
+            cls._severity_param(),
             Parameters("headers", dict, False, "Extra HTTP headers", {}),
             Parameters("verify", bool, False, "SSL verify", False),
         ]

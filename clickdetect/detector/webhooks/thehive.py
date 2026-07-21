@@ -10,6 +10,15 @@ logger = getLogger(__name__)
 
 
 class TheHiveWebhook(BaseWebhook):
+    # thehive has no informational severity, it falls back to low
+    severity_ids: Dict[str, int] = {
+        "informational": 1,
+        "low": 1,
+        "medium": 2,
+        "high": 3,
+        "critical": 4,
+    }
+
     name: str
     url: str
     headers: Dict[str, str]
@@ -19,6 +28,7 @@ class TheHiveWebhook(BaseWebhook):
     source: str
     tlp: int
     pap: int
+    severity_map: Dict[str, int]
     session: ClientSession
 
     async def close(self):
@@ -33,7 +43,7 @@ class TheHiveWebhook(BaseWebhook):
         rule = j_data.get("rule", {})
 
         level = rule.get("level", 0)
-        severity = 1 if level <= 3 else 2 if level <= 7 else 3 if level <= 10 else 4
+        severity = self.severity_ids[self._severity(level)]
 
         tags = rule.get("tags", [])
         result_data = j_data.get("data")
@@ -87,6 +97,7 @@ class TheHiveWebhook(BaseWebhook):
                 attr_name="alert_type",
             ),
             Parameters("source", str, False, "Alert source", "clickdetect"),
+            cls._severity_param(),
             Parameters("tlp", int, False, "Traffic Light Protocol level (0-4)", 2),
             Parameters(
                 "pap", int, False, "Permissible Actions Protocol level (0-4)", 2

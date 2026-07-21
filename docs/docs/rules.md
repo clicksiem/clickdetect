@@ -7,7 +7,7 @@ Rules are YAML files that define what to query, and under what condition an aler
 ```yaml
 id: "001"
 name: Brute Force Detected
-level: 8
+level: 65
 size: ">5"
 active: true
 author:
@@ -31,7 +31,7 @@ rule: |-
 |---|---|---|
 | `id` | yes | Unique rule identifier (string) |
 | `name` | yes | Human-readable name |
-| `level` | yes | Severity level (integer, higher = more severe) |
+| `level` | yes | Severity level (integer `0`-`100`, higher = more severe, see [Severity levels](#severity-levels)) |
 | `size` | yes | Condition to trigger the alert (see below) |
 | `active` | no | Enable or disable the rule (default: `true`) |
 | `rule` | yes | Query template (Jinja2, executed against the datasource) |
@@ -41,6 +41,46 @@ rule: |-
 | `description` | no | Description of what the rule detects |
 | `data` | no | Custom key/value data, available in the rule template |
 | `sigma` | no | Parse the `rule` field as a Sigma rule (default: `false`) |
+
+## Severity levels
+
+`level` is an integer between `0` and `100`. Anything outside that range makes the rule fail to load.
+
+Webhooks translate the level into the severity vocabulary of their destination using these
+bands, where each band starts at the level below and ends where the next one begins:
+
+| Band | Level |
+|---|---|
+| `informational` | 0 |
+| `low` | 20 |
+| `medium` | 40 |
+| `high` | 60 |
+| `critical` | 80 |
+
+The bands are configurable per webhook with the `severity_map` option, which takes the
+minimum rule level of each band. Bands left out keep their default:
+
+```yaml
+webhooks:
+    my_hook:
+        type: opsgenie
+        api_key: '...'
+        severity_map: # optional, only the bands you want to move
+            high: 70
+            critical: 90
+```
+
+Each webhook page documents how it maps the bands to its destination.
+
+Sigma rules use a textual `level`, which is converted on load:
+
+| Sigma level | Clickdetect level |
+|---|---|
+| `informational` | 10 |
+| `low` | 30 |
+| `medium` | 50 |
+| `high` | 75 |
+| `critical` | 90 |
 
 ## `size` — condition format
 
