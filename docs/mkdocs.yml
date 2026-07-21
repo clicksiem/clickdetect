@@ -62,6 +62,7 @@ nav:
       - DFIR-IRIS: webhooks/iris.md
       - TheHive: webhooks/thehive.md
       - OpsGenie: webhooks/opsgenie.md
+      - AlertManager: webhooks/alertmanager.md
       - Slack: webhooks/slack.md
       - Telegram: webhooks/telegram.md
       - Matrix: webhooks/matrix.md
