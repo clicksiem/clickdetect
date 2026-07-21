@@ -45,6 +45,7 @@ Follow the doc: [https://clickdetect.souzo.me](https://clickdetect.souzo.me)
 - Discord
 - TheHive
 - Opsgenie
+- AlertManager
 
 ### Plugins
 
@@ -132,19 +133,36 @@ plugins:
     provider: 'openai' # provider: openai, anthropic, google, huggingface, ollama, openrouter, deepseek
     model: 'gpt-5.2' # get model from your provider
     token: 'xxx'
-    from_level: 10 # only run for alerts with alert level >= 10
+    from_level: 60 # only run for alerts with alert level >= 60
     ids:
       - "id1"
 ```
 
 More example of runner in [example_rules](./example_rules/)
 
+## High Availability
+
+By default Clickdetect runs as a single process and keeps the detection window of each detector in memory, so two instances sharing a config would emit duplicate alerts.
+
+Adding a top-level `redis` block turns it into an active-passive, multi-replica setup with automatic failover:
+
+```yaml
+redis:
+    url: redis://localhost:6379/0
+    namespace: clickdetect # optional
+    lock_ttl: 1500 # optional, failover latency in seconds
+```
+
+Every detector run takes a distributed lock, so only one replica evaluates a given window, and the window itself is stored in Redis, so a replica taking over resumes from exactly where the previous one stopped — no gaps, no reprocessing. Run identical replicas against the same `runner.yml` and the same Redis.
+
+See [High Availability](https://clickdetect.souzo.me/high-availability/) for details.
+
 ## Rule Configuration
 
 ```yaml
 id: "00000000-0000-0000-0000-000000000000"
 name: "Base rule for help"
-level: 1
+level: 50
 size: ">0"
 active: false
 author: 
@@ -157,6 +175,34 @@ data: # variables sent to rules by jinja
 rule: |-
     < rule >
 ```
+
+## Severity
+
+A rule's `level` is an integer from `0` to `100` — anything outside that range makes the rule fail to load. Sigma rules use a textual level (`informational`, `low`, `medium`, `high`, `critical`), which is converted to that scale on load.
+
+Since every destination has its own severity vocabulary, the level is first resolved into a band:
+
+| Band | Level |
+|---|---|
+| `informational` | 0 |
+| `low` | 20 |
+| `medium` | 40 |
+| `high` | 60 |
+| `critical` | 80 |
+
+Each webhook then translates the band into what its destination expects. The bands are configurable per webhook with `severity_map`, which sets the minimum rule level of each band — bands left out keep their default:
+
+```yaml
+webhooks:
+    opsgenie_hook:
+        type: opsgenie
+        api_key: 'xxx'
+        severity_map:
+            high: 70
+            critical: 90
+```
+
+See [Severity levels](https://clickdetect.souzo.me/rules/#severity-levels) for details.
 
 ## Release
 
