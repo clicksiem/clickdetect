@@ -423,7 +423,7 @@ wheels = [
 
 [[package]]
 name = "clickdetect"
-version = "1.17.0"
+version = "1.18.0"
 source = { editable = "." }
 dependencies = [
     { name = "aiohttp", extra = ["speedups"] },
