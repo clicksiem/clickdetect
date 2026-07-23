@@ -47,9 +47,11 @@ nav:
     - Datasources:
       - Overview: datasource/index.md
       - ClickHouse: datasource/clickhouse.md
+      - Databricks: datasource/databricks.md
       - DuckDB: datasource/duckdb.md
       - Elasticsearch: datasource/elasticsearch.md
       - Opensearch: datasource/opensearch.md
+      - Opensearch PPL: datasource/opensearch-ppl.md
       - Loki: datasource/loki.md
       - PostgreSQL: datasource/postgresql.md
       - VictoriaLogs: datasource/victorialogs.md
