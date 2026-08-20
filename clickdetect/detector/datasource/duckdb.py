@@ -49,8 +49,6 @@ class DuckDBDataSource(BaseDataSource):
                     f"CREATE OR REPLACE SECRET secret ( {', '.join(secret_sql_parts)} )"
                 )
 
-                logger.debug(f"Secret sql: {secret_sql}")
-
                 self.connection.execute(secret_sql)
 
         except Exception as ex:
