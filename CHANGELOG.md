@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.18.2] - 2026-08-20
+
+### 🐛 Bug Fixes
+
+- Remove `secret_sql` from logging by @souzomain
+
 ## [1.18.1] - 2026-07-21
 
 ### 🐛 Bug Fixes
