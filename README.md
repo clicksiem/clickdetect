@@ -59,7 +59,7 @@ These are the active integrations, but they are not limited to them.
 
 ## Quick Start
 
-Start by creating a `runner.yml` file — see the full reference in the [documentation](https://clickdetect.souzo.me).
+Start by creating a `runner.yml` file see the full reference in the [documentation](https://clickdetect.souzo.me).
 
 ### uv
 
@@ -159,7 +159,7 @@ redis:
     lock_ttl: 1500 # optional, failover latency in seconds
 ```
 
-Every detector run takes a distributed lock, so only one replica evaluates a given window, and the window itself is stored in Redis, so a replica taking over resumes from exactly where the previous one stopped — no gaps, no reprocessing. Run identical replicas against the same `runner.yml` and the same Redis.
+Every detector run takes a distributed lock, so only one replica evaluates a given window, and the window itself is stored in Redis, so a replica taking over resumes from exactly where the previous one stopped no gaps, no reprocessing. Run identical replicas against the same `runner.yml` and the same Redis.
 
 See [High Availability](https://clickdetect.souzo.me/high-availability/) for details.
 
@@ -188,7 +188,7 @@ rule: |- # your rule based on your datasourcec
 
 ## Severity
 
-A rule's `level` is an integer from `0` to `100` — anything outside that range makes the rule fail to load. Sigma rules use a textual level (`informational`, `low`, `medium`, `high`, `critical`), which is converted to that scale on load.
+A rule's `level` is an integer from `0` to `100` anything outside that range makes the rule fail to load. Sigma rules use a textual level (`informational`, `low`, `medium`, `high`, `critical`), which is converted to that scale on load.
 
 Since every destination has its own severity vocabulary, the level is first resolved into a band:
 
@@ -200,7 +200,7 @@ Since every destination has its own severity vocabulary, the level is first reso
 | `high` | 60 |
 | `critical` | 80 |
 
-Each webhook then translates the band into what its destination expects. The bands are configurable per webhook with `severity_map`, which sets the minimum rule level of each band — bands left out keep their default:
+Each webhook then translates the band into what its destination expects. The bands are configurable per webhook with `severity_map`, which sets the minimum rule level of each band left out keep their default:
 
 ```yaml
 webhooks:

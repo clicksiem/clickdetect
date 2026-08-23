@@ -309,7 +309,7 @@ With this blog post now you can:
 
 Clickdetect is not affiliated to ClickHouse, and I'm not sponsored (yet).
 
-If this post helped you, consider giving [clickdetect a star on GitHub](https://github.com/clicksiem/clickdetect) — it helps the project reach more security teams. :star:
+If this post helped you, consider giving [clickdetect a star on GitHub](https://github.com/clicksiem/clickdetect). It helps the project reach more security teams. :star:
 
 Follow my social:
 * *E-mail*: me@souzo.me

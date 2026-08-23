@@ -21,7 +21,7 @@ pin: false
 
 Hey, souzo here. In this blog post I'll show you how to extend Wazuh's detection and alerting capabilities using Clickdetect.
 
-Wazuh is a fantastic open-source security platform — it collects logs from agents, parses events, and fires alerts based on its built-in rule engine. However, once you start running it at scale or need more sophisticated detection logic, you quickly hit a wall. The rule engine is static, alert correlation is limited to a single source at a time, and there is no native support for anomaly detection or complex aggregations.
+Wazuh is a fantastic open-source security platform. It collects logs from agents, parses events, and fires alerts based on its built-in rule engine. However, once you start running it at scale or need more sophisticated detection logic, you quickly hit a wall. The rule engine is static, alert correlation is limited to a single source at a time, and there is no native support for anomaly detection or complex aggregations.
 
 That's where Clickdetect comes in. By storing Wazuh alerts in ClickHouse, we unlock the full power of SQL to build detections that simply aren't possible inside Wazuh alone. If you're not familiar with how to set up ClickHouse and Clickdetect together, check out my previous post: [Building a powerful SIEM with ClickHouse and Clickdetect](https://medium.com/@souzo/building-a-powerful-siem-with-clickhouse-and-clickdetect-ae68a4495a76).
 
@@ -91,7 +91,7 @@ LIMIT 10
 
 #### SSH brute force followed by successful login
 
-This query correlates two types of events on the same host: a burst of SSH authentication failures followed by a successful login — a classic brute force pattern. Both events must happen within the same 10-minute window on the same agent to trigger the alert.
+This query correlates two types of events on the same host: a burst of SSH authentication failures followed by a successful login a classic brute force pattern. Both events must happen within the same 10-minute window on the same agent to trigger the alert.
 
 ```sql
 SELECT
@@ -145,7 +145,7 @@ LIMIT 50
 
 #### Spike in rule triggers
 
-This query counts how many times each rule fired in the last 5 minutes and compares it against the same rule's volume in the previous hour. Rules where the recent count is more than 3x the historical average are flagged — catching alert storms from malware spreading, scanning activity, or a misconfigured agent before they flood your notification channels.
+This query counts how many times each rule fired in the last 5 minutes and compares it against the same rule's volume in the previous hour. Rules where the recent count is more than 3x the historical average are flagged catching alert storms from malware spreading, scanning activity, or a misconfigured agent before they flood your notification channels.
 
 ```sql
 SELECT
@@ -164,7 +164,7 @@ LIMIT 50
 
 #### Agents that stopped sending alerts
 
-Silence can be just as suspicious as noise. This query returns agents that were active in the last hour but have sent no alerts in the last 10 minutes — which may indicate a downed agent, a network issue, or an attacker disabling the Wazuh service.
+Silence can be just as suspicious as noise. This query returns agents that were active in the last hour but have sent no alerts in the last 10 minutes which may indicate a downed agent, a network issue, or an attacker disabling the Wazuh service.
 
 ```sql
 SELECT DISTINCT agent_name
@@ -181,7 +181,7 @@ LIMIT 100
 
 ### SQL Considerations
 
-When querying large time intervals — 1 hour, 1 day, or more — scanning raw alert tables on every run can become expensive. A refreshable materialized view that pre-aggregates the data is usually a better choice.
+When querying large time intervals 1 hour, 1 day, or more scanning raw alert tables on every run can become expensive. A refreshable materialized view that pre-aggregates the data is usually a better choice.
 
 Here is an example for the Spike detection use case:
 
@@ -233,7 +233,7 @@ LIMIT 50
 
 ## Using these detections with Clickdetect
 
-Each SQL query above becomes a Clickdetect rule — a YAML file that wraps the query with metadata, a firing condition, and severity information. Clickdetect evaluates the rule on a schedule and fires an alert to your configured webhook whenever the query returns results.
+Each SQL query above becomes a Clickdetect rule a YAML file that wraps the query with metadata, a firing condition, and severity information. Clickdetect evaluates the rule on a schedule and fires an alert to your configured webhook whenever the query returns results.
 
 ### Rule file structure
 
@@ -390,6 +390,6 @@ Note: You can use Jinja template in description like the example above. I added 
 
 Wazuh is a solid foundation for endpoint and log visibility, but its detection engine was never designed for the kind of analytical workloads that modern threat detection demands. By routing Wazuh alerts into ClickHouse and wrapping SQL queries with Clickdetect rules, you get a detection layer that scales, correlates across sources, and sends batched notifications to any platform you already use.
 
-The patterns shown here — brute force correlation, lateral movement detection, silent agent monitoring, and spike detection — are just a starting point. Any behavior you can express as a SQL query over time-windowed data can become a Clickdetect rule.
+The patterns shown here brute force correlation, lateral movement detection, silent agent monitoring, and spike detection are just a starting point. Any behavior you can express as a SQL query over time-windowed data can become a Clickdetect rule.
 
 If you have questions or want to share a detection you built, feel free to open an issue or discussion on the [Clickdetect repository](https://github.com/clicksiem/clickdetect).

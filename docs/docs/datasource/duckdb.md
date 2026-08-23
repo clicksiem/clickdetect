@@ -2,7 +2,7 @@
 
 Query alerts with [DuckDB](https://duckdb.org/), an in-process SQL engine. Run
 queries against an in-memory database, a local `.duckdb` file, or remote data in
-S3-compatible object storage (S3, Cloudflare R2, Google Cloud Storage) — including
+S3-compatible object storage (S3, Cloudflare R2, Google Cloud Storage) including
 data lakes via functions like `delta_scan` and `read_parquet`.
 
 ## Config

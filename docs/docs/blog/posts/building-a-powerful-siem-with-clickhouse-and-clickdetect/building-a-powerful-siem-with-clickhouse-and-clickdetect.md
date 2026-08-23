@@ -67,7 +67,7 @@ A basic architecture how this will work.
 
 ## Clickhouse Wazuh Schema
 
-This schema is for Wazuh Alerts. In this case, Wazuh is only a log collector — we will only need Wazuh's decoder capabilities.
+This schema is for Wazuh Alerts. In this case, Wazuh is only a log collector we will only need Wazuh's decoder capabilities.
 
 #### Database 
 
@@ -182,7 +182,7 @@ uv run clickdetect -r runner.yml
 
 ## Conclusion
 
-With just a Clickhouse table, a runner configuration, and a detection rule, you have the foundation of a functional SIEM. This architecture is lightweight, cost-effective, and scales well — whether you're running it on a single node or a distributed Clickhouse cluster.
+With just a Clickhouse table, a runner configuration, and a detection rule, you have the foundation of a functional SIEM. This architecture is lightweight, cost-effective, and scales well whether you're running it on a single node or a distributed Clickhouse cluster.
 
 The key advantage over traditional SIEM solutions is control: you own the data, you define the schema, and you write the detections in plain SQL. There are no vendor lock-ins, no per-GB ingestion fees, and no black-box detection engines.
 

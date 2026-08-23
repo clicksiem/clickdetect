@@ -4,8 +4,8 @@ Query events from Opensearch using the
 [Piped Processing Language (PPL)](https://opensearch.org/docs/latest/search-plugins/sql/ppl/index/),
 served by the SQL/PPL plugin.
 
-Unlike the [Opensearch](opensearch.md) datasource — which sends Query DSL to a fixed
-index — a PPL query carries its own `source=` index pattern, so a single datasource can
+Unlike the [Opensearch](opensearch.md) datasource which sends Query DSL to a fixed
+index a PPL query carries its own `source=` index pattern, so a single datasource can
 search across any index.
 
 ## Config
@@ -23,7 +23,7 @@ datasource:
 
 - Queries are sent as `POST /_plugins/_ppl`. The SQL/PPL plugin must be installed
   (it ships with Opensearch by default).
-- There is no `index` setting — the index pattern comes from the query itself.
+- There is no `index` setting the index pattern comes from the query itself.
 - Authentication is optional and uses basic `username`/`password`.
 - The `rule` query must be a valid PPL statement.
 - The result count (`data.len`) is the `size` field returned by the API.

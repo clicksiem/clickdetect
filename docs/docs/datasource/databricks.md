@@ -26,7 +26,7 @@ datasource:
   variable substitution).
 - `catalog` is optional; when omitted the warehouse's default catalog is used. Tables can
   also be fully qualified in the query (`catalog.schema.table`).
-- A failed query closes the connection, which is reopened on the next run — a warehouse
+- A failed query closes the connection, which is reopened on the next run a warehouse
   that is starting up will not permanently break the detector.
 
 ## Example

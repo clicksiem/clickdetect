@@ -7,7 +7,7 @@ the same config would make both evaluate the same detectors, producing
 reprocessing.
 
 Configuring **Redis** turns Clickdetect into an active-passive, multi-replica
-setup with automatic failover — no separate leader election required.
+setup with automatic failover no separate leader election required.
 
 ## How it works
 
@@ -58,7 +58,7 @@ automatically.
 
 While a detector runs, a background watchdog **renews the lock** (every
 `lock_ttl / 3`), so a run may take longer than `lock_ttl` without ever losing
-the lock — no duplicate alerts even for slow queries. You do **not** need to
+the lock no duplicate alerts even for slow queries. You do **not** need to
 size `lock_ttl` above your slowest run.
 
 Instead, `lock_ttl` is the **failover latency**: if a replica crashes mid-run,

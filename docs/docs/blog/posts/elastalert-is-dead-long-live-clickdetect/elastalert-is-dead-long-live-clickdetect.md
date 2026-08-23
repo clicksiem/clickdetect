@@ -19,7 +19,7 @@ pin: false
 
 Hey, souzo here.
 
-ElastAlert has been around for a long time and served the security community well. But the ecosystem has changed — new datasources emerged, new integrations became standard, and the expectations around alerting tools grew significantly. ElastAlert has struggled to keep up.
+ElastAlert has been around for a long time and served the security community well. But the ecosystem has changed new datasources emerged, new integrations became standard, and the expectations around alerting tools grew significantly. ElastAlert has struggled to keep up.
 
 This post introduces **Clickdetect** as a modern alternative: more datasources, more webhooks, more control over your queries, and a simpler operational model. If you are tired of working around ElastAlert's limitations, this is for you.
 
@@ -33,7 +33,7 @@ You can also read my previous blog post about [Building a powerful SIEM with Cli
 
 # Why replace ElastAlert with Clickdetect?
 
-You may think — who is this guy trying to tell me that Clickdetect is better than ElastAlert when I've been using ElastAlert for years?
+You may think who is this guy trying to tell me that Clickdetect is better than ElastAlert when I've been using ElastAlert for years?
 
 I'm just someone trying to build the best open source security project of my life.
 
@@ -66,14 +66,14 @@ You can also integrate any data lake you already have with big data tables!
 
 ### More control
 
-* You have full control over your data — Clickhouse is like PostgreSQL, but built for your dreams.
+* You have full control over your data Clickhouse is like PostgreSQL, but built for your dreams.
 
 ### More, more, more
 
-* Reading the Clickhouse documentation is a piece of heaven — you will discover functionalities you never knew existed!
+* Reading the Clickhouse documentation is a piece of heaven you will discover functionalities you never knew existed!
 * WARNING: You could become addicted!
 
-## Ok, Clickhouse is better — but why Clickdetect over ElastAlert?
+## Ok, Clickhouse is better but why Clickdetect over ElastAlert?
 
 I built Clickdetect to be as generic as possible. You can even use Clickdetect with Elasticsearch if you are not ready to switch to Clickhouse as your datasource.
 
@@ -81,21 +81,21 @@ I built Clickdetect to be as generic as possible. You can even use Clickdetect w
 
 * Elasticsearch/Opensearch: Yes, Clickdetect has integration with it.
 * Clickhouse: Of course.
-* Loki: Grafana Loki datasource integration — great if you want to replace Loki or the Grafana alerting engine.
+* Loki: Grafana Loki datasource integration great if you want to replace Loki or the Grafana alerting engine.
 * VictoriaLogs: VictoriaLogs can match the performance of Elasticsearch and Clickhouse. I simply didn't choose it as the primary datasource because it is still very recent.
-* PostgreSQL: PostgreSQL integration — you can search through your database. If you use TimescaleDB or TigerData, this works great too.
+* PostgreSQL: PostgreSQL integration you can search through your database. If you use TimescaleDB or TigerData, this works great too.
 * Databricks (not implemented yet, but on my roadmap).
 
 ### Webhooks
 
-* Generic: Generic integration — send to any webhook, including N8N.
+* Generic: Generic integration send to any webhook, including N8N.
 * DFIR Iris: Send alerts to DFIR Iris.
 * Forgejo/Gitea: Create issues from your alerts.
 * Email: Send alerts via e-mail.
 * Microsoft Teams: Send alerts to Microsoft Teams.
 * Slack: Send alerts to Slack.
 * Telegram: Send alerts to a Telegram bot.
-* Whatever you want: The Clickdetect documentation will show you how to implement your own webhook — or just open an issue!
+* Whatever you want: The Clickdetect documentation will show you how to implement your own webhook or just open an issue!
 
 ### Runtime management
 
@@ -108,7 +108,7 @@ I built Clickdetect to be as generic as possible. You can even use Clickdetect w
 
 ## ElastAlert rules vs Clickdetect rules
 
-Let's make this concrete. Here is the same detection — **multiple failed logins in a short window** — written in both tools. This example uses **Elasticsearch/OpenSearch as the datasource**, so if you are already an ElastAlert user, you can migrate without touching your stack.
+Let's make this concrete. Here is the same detection **multiple failed logins in a short window** written in both tools. This example uses **Elasticsearch/OpenSearch as the datasource**, so if you are already an ElastAlert user, you can migrate without touching your stack.
 
 ### ElastAlert
 
@@ -129,7 +129,7 @@ alert:
 slack_webhook_url: "https://hooks.slack.com/services/your/webhook/url"
 ```
 
-ElastAlert owns the query logic. You configure *what* you want to detect through its abstraction layer — frequency, spike, flatline — and it builds the query for you. That works until you need something it does not support.
+ElastAlert owns the query logic. You configure *what* you want to detect through its abstraction layer frequency, spike, flatline and it builds the query for you. That works until you need something it does not support.
 
 ### Clickdetect
 
@@ -195,10 +195,10 @@ The migration path is straightforward: keep your Elasticsearch/OpenSearch stack,
 
 If you made it this far, you now know why I built Clickdetect and what it can do for you.
 
-Clickdetect is open source, actively maintained, and designed to grow with your infrastructure — whether you are running Elasticsearch today or planning a full move to Clickhouse tomorrow.
+Clickdetect is open source, actively maintained, and designed to grow with your infrastructure whether you are running Elasticsearch today or planning a full move to Clickhouse tomorrow.
 
-If this project helped you or sounds promising, **please give it a star on GitHub** — it means a lot and helps the project reach more people in the security community.
+If this project helped you or sounds promising, **please give it a star on GitHub** it means a lot and helps the project reach more people in the security community.
 
 [⭐ Star Clickdetect on GitHub](https://github.com/clicksiem/clickdetect)
 
-Have questions, ideas, or want to contribute? Open an issue or a pull request — the door is always open.
+Have questions, ideas, or want to contribute? Open an issue or a pull request the door is always open.

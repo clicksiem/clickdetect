@@ -116,13 +116,13 @@ Calling an LLM introduces latency that can range from a few hundred milliseconds
 
 ## Conclusion
 
-With clickagentic, the possibilities are endless — automate triage, enrich alerts, and respond faster.
+With clickagentic, the possibilities are endless automate triage, enrich alerts, and respond faster.
 You can automatically skip alerts with a false positive score above 90%.
 You can automate your SOC L1 process. Want to validate alerts in other systems? Try using MCP, or open an issue and let me know!
 
 
-If this project helped you or sounds promising, **please give it a star on GitHub** — it means a lot and helps the project reach more people in the security community.
+If this project helped you or sounds promising, **please give it a star on GitHub** it means a lot and helps the project reach more people in the security community.
 
 [⭐ Star Clickdetect on GitHub](https://github.com/clicksiem/clickdetect)
 
-Have questions, ideas, or want to contribute? Open an issue or a pull request — the door is always open.
+Have questions, ideas, or want to contribute? Open an issue or a pull request the door is always open.

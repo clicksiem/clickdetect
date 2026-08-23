@@ -28,7 +28,7 @@ runner.yml
 ## How it works
 
 1. Each **detector** runs on a configurable interval (e.g. every 5 minutes).
-2. On each tick, it evaluates its **rules** — each rule renders a query with Jinja2, executes it against the datasource, and checks whether the row count satisfies the rule's `size` condition (e.g. `>0`, `>=10`, `==5`).
+2. On each tick, it evaluates its **rules**. Each rule renders a query with Jinja2, executes it against the datasource, and checks whether the row count satisfies the rule's `size` condition (e.g. `>0`, `>=10`, `==5`).
 3. If the condition is met, all linked **webhooks** are called with the alert payload.
 
 ## Key concepts
