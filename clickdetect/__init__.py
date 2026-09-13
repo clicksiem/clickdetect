@@ -103,7 +103,7 @@ async def load_runner(args: Any) -> Runner | None:
     return runner
 
 
-async def loop_run(runner: Runner | None = None):
+async def loop_run(runner: Runner | None = None, manager: Manager | None = None):
     try:
         while await config.is_running():
             await asyncio.sleep(1)
@@ -115,6 +115,8 @@ async def loop_run(runner: Runner | None = None):
         if runner:
             await runner.manager.shutdown()
             await runner.close()
+        elif manager:
+            await manager.shutdown()
 
 
 def read_stdin() -> str:
@@ -230,12 +232,21 @@ async def main():
     if args.sigma:
         logger.info("Running all_sigma mode. all rules discovered needs to be sigma")
 
-    if not f_exists(args.runner) and not args.stdin:
+    runner_exists = f_exists(args.runner) or args.stdin
+    if not runner_exists and not args.api:
         logger.fatal(f"File {args.runner} does not exists")
         exit(1)
 
-    runner = await load_runner(args)
-    tasks = [loop_run(runner)]
+    runner = None
+    manager = None
+    if runner_exists:
+        runner = await load_runner(args)
+    else:
+        logger.warning(f"Runner file {args.runner} not found, starting API only")
+        manager = Manager()
+        set_manager_instance(manager)
+
+    tasks = [loop_run(runner, manager)]
     if args.api:
         tasks.append(load_api(args))
     if args.reload and runner:
