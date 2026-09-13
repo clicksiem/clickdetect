@@ -10,6 +10,7 @@ from os.path import exists as f_exists
 from yaml import safe_load
 from .api.detector import router as detector_router
 from .api.rules import router as rules_router
+from .api.health import router as health_router
 from .detector.runner import Runner
 from .detector.config import version
 from .detector import config
@@ -70,6 +71,7 @@ async def load_api(args: Any):
     app = FastAPI(title=config.app_name)
     app.include_router(detector_router)
     app.include_router(rules_router)
+    app.include_router(health_router)
 
     log_level = "info" if not args.verbose else "debug"
     server_config = uvicorn.Config(
