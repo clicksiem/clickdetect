@@ -1,11 +1,31 @@
+from typing import Any, Dict
 from fastapi import APIRouter, HTTPException
 from ..detector.manager import get_manager_instance
+from ..detector.runner import get_runner_instance
+from .errors import runner_error
 
 router = APIRouter(prefix="/rules")
 
 from logging import getLogger
 
 logger = getLogger(__name__)
+
+@router.post("/{detector_id}", status_code=201)
+async def createRule(detector_id: str, data: Dict[str, Any]):
+    logger.info('createRule')
+    manager = get_manager_instance()
+    detector = await manager.get_detector_by_id(detector_id)
+    if not detector:
+        logger.error(f'Detector {detector_id} not found')
+        raise HTTPException(status_code=404, detail="Detector not found")
+    runner = get_runner_instance()
+    try:
+        rule = await runner.add_rule(detector, data)
+    except Exception as ex:
+        # no network involved, any other failure is an invalid rule (e.g. sigma conversion)
+        raise runner_error(ex, default_status=422)
+    return rule.to_dict()
+
 
 @router.get("/{detector_id}")
 async def listRules(detector_id: str):

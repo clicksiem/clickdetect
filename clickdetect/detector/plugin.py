@@ -20,14 +20,14 @@ class PluginSystem:
         self.manager: Manager = get_manager_instance()
         self.hooks: HookRegistry = HookRegistry()
 
-    async def load_plugin_id(self, id: str, config: Any):
+    async def load_plugin_id(self, id: str, config: Any) -> bool:
         logger.debug(f'Trying to load plugin {id}')
         logger.debug(f'config: {config}')
 
         r = next((x for x in self.plugins if x.id == id), None)
         if not r:
             logger.error(f'plugin id {id} not found')
-            return None
+            return False
 
         logger.info(f'plugin {r.id}:')
         logger.info(f'\tName: {r.name}')
@@ -39,6 +39,8 @@ class PluginSystem:
         except Exception as ex:
             logger.error('Plugin load error')
             logger.error(str(ex))
+            return False
+        return True
 
     async def load(self):
         logger.debug('Loading plugins')

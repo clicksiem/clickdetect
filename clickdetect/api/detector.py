@@ -1,6 +1,9 @@
+from typing import Any, Dict
 from fastapi import APIRouter, HTTPException
 from ..detector.manager import get_manager_instance
+from ..detector.runner import get_runner_instance
 from ..detector.detector import Detector
+from .errors import runner_error
 from datetime import datetime
 from logging import getLogger
 
@@ -22,6 +25,20 @@ def detector_to_dict(job_id: str, d: Detector):
         "last_time_exec": datetime.fromtimestamp(d._last_time).isoformat(),
         "next_time_exec": datetime.fromtimestamp(d._next_time).isoformat(),
     }
+
+
+@router.post("", status_code=201)
+async def createDetector(data: Dict[str, Any]):
+    logger.info("createDetector")
+    runner = get_runner_instance()
+    data = dict(data)
+    auto_start = bool(data.pop("start", True))
+    try:
+        job_id = await runner.add_detector(data, auto_start)
+    except Exception as ex:
+        raise runner_error(ex)
+    logger.debug(f"Detector created {job_id}")
+    return {"id": job_id}
 
 
 @router.get("/list")

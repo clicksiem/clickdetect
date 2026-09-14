@@ -11,7 +11,10 @@ from yaml import safe_load
 from .api.detector import router as detector_router
 from .api.rules import router as rules_router
 from .api.health import router as health_router
-from .detector.runner import Runner
+from .api.datasource import router as datasource_router
+from .api.webhooks import router as webhooks_router
+from .api.plugins import router as plugins_router
+from .detector.runner import Runner, set_runner_instance
 from .detector.config import version
 from .detector import config
 from .detector.datasource import datasources
@@ -72,6 +75,9 @@ async def load_api(args: Any):
     app.include_router(detector_router)
     app.include_router(rules_router)
     app.include_router(health_router)
+    app.include_router(datasource_router)
+    app.include_router(webhooks_router)
+    app.include_router(plugins_router)
 
     log_level = "info" if not args.verbose else "debug"
     server_config = uvicorn.Config(
@@ -105,7 +111,7 @@ async def load_runner(args: Any) -> Runner | None:
     return runner
 
 
-async def loop_run(runner: Runner | None = None, manager: Manager | None = None):
+async def loop_run(runner: Runner | None = None):
     try:
         while await config.is_running():
             await asyncio.sleep(1)
@@ -117,8 +123,6 @@ async def loop_run(runner: Runner | None = None, manager: Manager | None = None)
         if runner:
             await runner.manager.shutdown()
             await runner.close()
-        elif manager:
-            await manager.shutdown()
 
 
 def read_stdin() -> str:
@@ -240,15 +244,17 @@ async def main():
         exit(1)
 
     runner = None
-    manager = None
     if runner_exists:
         runner = await load_runner(args)
     else:
         logger.warning(f"Runner file {args.runner} not found, starting API only")
-        manager = Manager()
-        set_manager_instance(manager)
+        runner = await Runner(
+            {}, all_is_sigma=args.sigma, dry_run=args.dry_run
+        ).init_empty()
+    if runner:
+        set_runner_instance(runner)
 
-    tasks = [loop_run(runner, manager)]
+    tasks = [loop_run(runner)]
     if args.api:
         tasks.append(load_api(args))
     if args.reload and runner:
