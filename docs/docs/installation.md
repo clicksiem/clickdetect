@@ -35,7 +35,7 @@ uv run clickdetect [OPTIONS]
 
 | Flag | Default | Description |
 |---|---|---|
-| `--api` | off | Start the REST API server |
+| `--api` | off | Start the REST API server. Without a runner file, starts empty and is configured through the API |
 | `-p`, `--port` | `8080` | Port for the API server |
 | `-r`, `--runner` | `runner.yml` | Path to the runner configuration file |
 | `--stdin` | off | Read the runner configuration from stdin |
